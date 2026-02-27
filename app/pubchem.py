@@ -1,11 +1,11 @@
 import re
 
+import pubchempy as pcp
 import streamlit as st
 from rdkit import Chem
 from rdkit.Chem import Mol
 
-from app.config import PUBCHEM_CID_URL, PUBCHEM_PROP_URL, PUBCHEM_SYN_URL, logger
-from app.utils import get_response_json
+from app.config import logger
 
 
 def get_clean_common_name(synonyms: list[str]) -> str:
@@ -40,64 +40,51 @@ def get_clean_common_name(synonyms: list[str]) -> str:
     return "Unknown"
 
 
-def _get_pubchem_metadata(mol: Mol) -> dict[str, str]:
+def _get_pubchem_metadata(mol: Mol) -> dict:
     try:
         if mol is None:
-            return {"iupac": "Unknown", "common": "Unknown"}
+            return {"iupac": "Unknown", "common": "Unknown", "success": False}
 
-        # ⭐ Convert RDKit Mol → SMILES STRING
-        smiles = Chem.MolToSmiles(mol)
+        smiles = Chem.MolToSmiles(mol, canonical=True)
 
-        # Step 1: SMILES → CID lookup
-        cid_url = PUBCHEM_CID_URL.format(smiles)
-        cid_data = get_response_json(cid_url)
+        compounds = pcp.get_compounds(smiles, namespace="smiles")
 
-        if not cid_data:
-            return {"iupac": "Unknown", "common": "Unknown"}
+        if not compounds:
+            return {
+                "iupac": "Unknown",
+                "common": "Unknown",
+                "success": False,
+                "query_smiles": smiles,
+            }
+        # There might be multiple possible matches
+        # Take the first (best-ranked, highest confidence) result
+        compound = compounds[0]
 
-        cid_list = cid_data.get("IdentifierList", {}).get("CID", [])
-
-        if not cid_list or len(cid_list) == 0:
-            return {"iupac": "Unknown", "common": "Unknown"}
-
-        cid = cid_list[0]
-
-        # PubChem CIDs start from 1
-        if cid <= 0:
-            return {"iupac": "Unknown", "common": "Unknown"}
-
-        # Step 2: Get IUPAC name
-        prop_url = PUBCHEM_PROP_URL.format(cid)
-        prop_data = get_response_json(prop_url)
-
-        iupac = "Unknown"
-
-        if prop_data:
-            iupac = (
-                prop_data.get("PropertyTable", {})
-                .get("Properties", [{}])[0]
-                .get("IUPACName", "Unknown")
-            )
-
-        # Step 3: Get synonyms
-        syn_url = PUBCHEM_SYN_URL.format(cid)
-        syn_data = get_response_json(syn_url)
-
-        synonyms = []
-
-        if syn_data:
-            synonyms = (
-                syn_data.get("InformationList", {}).get("Information", [{}])[0].get("Synonym", [])
-            )
-
+        iupac = compound.iupac_name or "Unknown"
+        synonyms = compound.synonyms or []
         common = get_clean_common_name(synonyms)
 
-        return {"iupac": iupac, "common": common}
+        return {
+            # 🔹 OLD KEYS (unchanged → no disruption)
+            "iupac": iupac,
+            "common": common,
+            # 🔹 NEW SAFE FIELDS
+            "success": True,
+            "query_smiles": smiles,
+            "cid": compound.cid,
+            "inchikey": compound.inchikey,
+            "inchi": compound.inchi,
+            "molecular_formula": compound.molecular_formula,
+            "molecular_weight": compound.molecular_weight,
+            "canonical_smiles": compound.canonical_smiles,
+            "isomeric_smiles": compound.isomeric_smiles,
+            "synonyms": synonyms[:10] if synonyms else [],
+        }
 
     except Exception as e:
         logger.exception(f"Error retrieving PubChem metadata: {e}")
         st.error(str(e))
-        return {"iupac": "Error", "common": "Error"}
+        return {"iupac": "Error", "common": "Error", "success": False}
 
 
 @st.cache_data(ttl=86400)

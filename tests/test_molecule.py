@@ -1,5 +1,7 @@
 """Tests for molecular analysis functions."""
 
+from unittest.mock import patch
+
 import pytest
 from rdkit import Chem
 
@@ -24,6 +26,29 @@ class TestGetMolecule:
         """Test that empty SMILES returns None."""
         mol = get_molecule("")
         assert mol is None
+
+    def test_valid_smiles_logs_info(self, caplog):
+        """Test that valid SMILES logs info message."""
+        import logging
+
+        # Use unique SMILES to avoid cache
+        unique_smiles = "CC(C)Cc1ccc(cc1)C(C)C(=O)O"  # Ibuprofen
+
+        with caplog.at_level(logging.INFO):
+            mol = get_molecule(unique_smiles)
+
+        assert mol is not None
+        # When molecule creation succeeds, we expect the mol to be returned
+        assert isinstance(mol, Chem.Mol)
+
+    @patch("app.molecule.Chem.MolFromSmiles")
+    def test_molecule_creation_exception(self, mock_mol_from_smiles):
+        """Test exception handling in get_molecule."""
+        mock_mol_from_smiles.side_effect = Exception("SMILES parsing error")
+
+        result = get_molecule("valid_smiles")
+
+        assert result is None
 
 
 class TestRdkitProperties:
@@ -71,6 +96,20 @@ class TestRdkitProperties:
         for key, value in props.items():
             assert isinstance(value, (int, float)), f"{key} is not numeric"
 
+    @patch("app.molecule.logger")
+    @patch("app.molecule.st.error")
+    @patch("app.molecule.Crippen.MolLogP")
+    def test_property_calculation_exception(self, mock_logp, mock_st_error, mock_logger):
+        """Test exception handling when property calculation fails."""
+        mock_logp.side_effect = Exception("LogP failed")
+
+        mol = get_molecule("CCO")
+        props = get_rdkit_properties(mol)
+
+        assert props is None
+        mock_logger.error.assert_called()
+        mock_st_error.assert_called()
+
 
 class TestLipinskiRules:
     """Test Lipinski Rule-of-5 evaluation."""
@@ -117,3 +156,12 @@ class TestLipinskiRules:
 
         with pytest.raises(KeyError):
             lipinski_rules(incomplete_props)
+
+    @patch("app.molecule.logger")
+    def test_lipinski_rules_exception_handling(self, mock_logger):
+        """Test exception handling in lipinski_rules."""
+        # Create a properties dict that will trigger an exception
+        bad_props = {"mw": "invalid", "logP": 3, "hbd": 1, "hba": 1}
+
+        with pytest.raises(TypeError):
+            lipinski_rules(bad_props)

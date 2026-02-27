@@ -16,13 +16,17 @@ def safe_execute(func, *args) -> Any | None:
 
 
 @st.cache_data(ttl=86400)  # Cache for 24 hours
-def get_response_json(url: str) -> dict[str, Any] | None:
+def get_response_json(url: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
-        logger.info(f"Successfully fetched: {url}")
+
+        # Log full final URL (including params)
+        logger.info(f"Successfully fetched: {response.url}")
+
         return response.json()
+
     except requests.exceptions.RequestException as e:
-        logger.warning(f"API request failed for {url}: {e}")
+        logger.warning(f"API request failed for {url} with params={params}: {e}")
         st.error(f"API request failed: {e}")
         return None

@@ -38,3 +38,613 @@
 2026-02-27 14:50:52,898 - app.config - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=CN1C=NC2=C1C(=O)N(C(=O)N2)CO)O
 2026-02-27 14:50:52,899 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
 2026-02-27 14:50:53,653 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(C)Cc1ccc(C(C)C(O)=Cn2cnc3[nH]c(=O)n(CO)c(=O)c32)cc1/cids/JSON
+2026-02-27 22:49:00,433 - app.config - INFO - Created molecule from SMILES: c1ccccc1
+2026-02-27 22:49:00,439 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 22:49:10,079 - app.config - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=O)O
+2026-02-27 22:49:10,081 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 22:53:34,465 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 22:59:03,440 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:02:13,658 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:05:57,639 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:32:27,135 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:32:27,158 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:32:27,159 - app.config - INFO - Resolved InChIKey: HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-27 23:32:27,159 - app.config - INFO - Searching ChEMBL molecule for InChIKey: HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-27 23:32:31,234 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/molecule.json?molecule_structures__standard_inchi_key=HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-27 23:32:31,238 - app.config - INFO - ChEMBL molecule found: CHEMBL521
+2026-02-27 23:32:31,238 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL521
+2026-02-27 23:32:32,709 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/activity.json?molecule_chembl_id=CHEMBL521&limit=20
+2026-02-27 23:32:32,712 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL521
+2026-02-27 23:32:32,713 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:33:28,017 - app.config - INFO - Created molecule from SMILES: c1ccccc1
+2026-02-27 23:33:28,023 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:33:29,635 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:33:29,635 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:33:29,635 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:33:30,377 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/molecule.json?molecule_structures__standard_inchi_key=UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:33:30,380 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:33:30,380 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:33:32,224 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/activity.json?molecule_chembl_id=CHEMBL277500&limit=20
+2026-02-27 23:33:32,228 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:33:32,228 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:35:04,270 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:35:04,362 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:35:04,363 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:35:04,363 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:35:04,363 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:35:04,364 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:35:04,364 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:35:04,378 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:36:37,445 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:36:37,470 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:36:37,471 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:36:37,471 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:36:37,472 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:36:37,473 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:36:37,474 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:36:37,475 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:43:20,256 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:43:20,281 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:43:20,282 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:43:20,282 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:43:20,283 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:43:20,283 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:43:20,284 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:43:20,284 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:43:37,289 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:43:37,314 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:43:37,315 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:43:37,315 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:43:37,316 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:43:37,316 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:43:37,316 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:43:37,317 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:47:20,424 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:47:20,445 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:47:20,446 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:47:20,446 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:47:20,447 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:47:20,447 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:47:20,448 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:47:20,448 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:47:23,919 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:47:23,940 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:47:23,941 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:47:23,942 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:47:23,942 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:47:23,942 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:47:23,942 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:47:23,943 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:48:32,504 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:48:32,526 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:48:32,527 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:48:32,527 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:48:32,528 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:48:32,528 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:48:32,528 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:48:32,529 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:50:35,688 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:50:35,711 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:50:35,712 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:50:35,712 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:50:35,713 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:50:35,713 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:50:35,714 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:50:35,714 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:51:45,610 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:51:45,638 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:51:45,639 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:45,639 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:45,640 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:51:45,640 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:51:45,641 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:51:45,641 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:51:45,646 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:45,647 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:51:57,293 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:51:57,321 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:51:57,322 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:57,322 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:57,323 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:51:57,323 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:51:57,323 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:51:57,324 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:51:57,328 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:51:57,329 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:52:48,358 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:52:48,394 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:52:48,403 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:53:06,182 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:53:06,212 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:53:06,212 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:53:06,213 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:53:06,213 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:53:06,213 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:53:06,214 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:53:06,214 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:53:06,218 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:53:06,218 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:56:34,340 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:56:34,362 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:56:34,363 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:56:34,364 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:56:34,364 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:56:34,364 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:56:34,365 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:56:34,365 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:56:34,368 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:56:34,369 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:57:41,610 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:57:41,632 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:57:41,634 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:57:41,634 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:57:41,635 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:57:41,635 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:57:41,636 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:57:41,636 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:57:41,640 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:57:41,642 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:58:37,854 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 23:58:37,876 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-27 23:58:37,877 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:58:37,877 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:58:37,878 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-27 23:58:37,878 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-27 23:58:37,878 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-27 23:58:37,878 - app.config - INFO - Bioactivity pipeline completed
+2026-02-27 23:58:37,882 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-27 23:58:37,882 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:02:52,917 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:02:52,938 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:02:52,939 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:02:52,939 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:02:52,939 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:02:52,940 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:02:52,940 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:02:52,941 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:02:52,945 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:02:52,946 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:14,451 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:04:14,477 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:04:14,478 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:14,478 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:14,479 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:14,479 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:04:14,481 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:04:14,482 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:04:14,488 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:14,489 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:24,092 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:04:24,115 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:04:24,117 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:24,117 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:24,118 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:24,118 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:04:24,119 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:04:24,119 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:04:24,125 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:24,126 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:46,134 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:04:46,156 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:04:46,157 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:46,157 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:46,158 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:46,158 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:04:46,158 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:04:46,158 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:04:46,163 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:46,165 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:56,674 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:04:56,701 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:04:56,703 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:56,703 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:56,704 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:04:56,704 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:04:56,705 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:04:56,705 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:04:56,711 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:04:56,712 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:02,157 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:05:02,184 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:05:02,184 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:02,184 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:02,185 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:02,186 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:05:02,187 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:05:02,187 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:05:02,191 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:02,192 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:09,984 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:05:10,016 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:05:10,018 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:10,018 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:10,019 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:10,020 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:05:10,048 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:05:10,049 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:05:10,098 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:10,100 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:16,793 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:05:16,817 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:05:16,817 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:16,818 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:16,819 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:16,819 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:05:16,820 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:05:16,820 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:05:16,826 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:16,827 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:22,481 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:05:22,508 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:05:22,509 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:22,509 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:22,510 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:22,510 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:05:22,511 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:05:22,511 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:05:22,516 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:22,516 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:33,947 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:05:33,978 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:05:33,979 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:33,979 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:33,980 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:05:33,980 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:05:33,980 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:05:33,980 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:05:33,987 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:05:33,987 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:11,105 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:07:11,129 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:07:11,130 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:11,130 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:11,131 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:11,131 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:07:11,132 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:07:11,132 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:07:11,139 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:11,139 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:21,224 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:07:21,246 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:07:21,247 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:21,247 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:21,248 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:21,248 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:07:21,249 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:07:21,249 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:07:21,253 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:21,254 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:55,153 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:07:55,182 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:07:55,182 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:55,183 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:55,183 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:07:55,184 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:07:55,184 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:07:55,185 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:07:55,191 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:07:55,192 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:05,686 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:05,711 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:05,712 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:05,713 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:05,714 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:05,714 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:05,714 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:05,714 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:05,719 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:05,720 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:15,774 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:15,801 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:15,802 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:15,802 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:15,803 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:15,803 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:15,803 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:15,803 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:15,808 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:15,809 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:20,743 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:20,769 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:20,770 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:20,770 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:20,770 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:20,771 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:20,771 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:20,771 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:20,776 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:20,776 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:24,703 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:24,729 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:24,730 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:24,730 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:24,731 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:24,731 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:24,731 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:24,731 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:24,735 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:24,736 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:30,273 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:30,300 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:30,301 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:30,301 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:30,302 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:30,302 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:30,304 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:30,304 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:30,310 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:30,311 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:45,425 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:08:45,454 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:08:45,455 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:45,455 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:45,456 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:08:45,456 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:08:45,457 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:08:45,457 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:08:45,462 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:08:45,463 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:32,791 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:09:32,813 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:09:32,814 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:32,814 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:32,815 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:32,815 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:09:32,815 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:09:32,816 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:09:32,821 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:32,821 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:49,248 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:09:49,275 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:09:49,277 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:49,278 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:49,279 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:49,279 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:09:49,279 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:09:49,280 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:09:49,285 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:49,286 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:55,731 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:09:55,753 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:09:55,753 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:55,754 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:55,755 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:09:55,755 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:09:55,756 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:09:55,756 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:09:55,762 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:09:55,763 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:09,516 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:10:09,542 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:10:09,543 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:09,544 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:09,545 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:09,545 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:10:09,547 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:10:09,547 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:10:09,556 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:09,558 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:17,659 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:10:17,682 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:10:17,682 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:17,682 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:17,683 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:17,683 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:10:17,683 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:10:17,683 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:10:17,688 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:17,689 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:36,896 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:10:36,935 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:10:36,936 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:36,936 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:36,937 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:36,937 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:10:36,938 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:10:36,938 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:10:36,944 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:36,944 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:50,150 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:10:50,172 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:10:50,173 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:50,174 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:50,174 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:10:50,175 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:10:50,175 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:10:50,175 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:10:50,181 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:10:50,182 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:11:08,608 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:11:08,635 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:11:08,643 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:11:08,643 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:11:08,643 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:11:08,644 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:11:08,644 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:11:08,644 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:11:08,649 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:11:08,650 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:12:48,717 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:12:48,740 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:12:48,740 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:12:48,740 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:12:48,741 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:12:48,741 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:12:48,742 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:12:48,742 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:12:48,747 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:12:48,748 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:15:53,955 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:15:53,977 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:15:53,978 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:15:53,978 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:15:53,979 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:15:53,979 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:15:53,980 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:15:53,980 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:15:53,984 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:15:53,985 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:21:15,774 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:21:15,800 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:21:15,801 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:21:15,801 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:21:15,802 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:21:15,802 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:21:15,803 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:21:15,803 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:22:02,534 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:22:02,554 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:22:02,555 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:22:02,555 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:22:02,556 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:22:02,556 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:22:02,557 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:22:02,557 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:22:02,562 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:22:02,563 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:02,791 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:23:02,819 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:23:02,820 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:02,820 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:02,821 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:02,821 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:23:02,821 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:23:02,822 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:23:02,828 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:02,828 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:15,596 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:23:15,628 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:23:15,629 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:15,629 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:15,629 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:15,630 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:23:15,630 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:23:15,630 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:23:15,635 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:15,635 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:26,332 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:23:26,359 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:23:26,360 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:26,361 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:26,361 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:26,361 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:23:26,362 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:23:26,362 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:23:26,366 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:26,366 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:31,004 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:23:31,029 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:23:31,029 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:31,030 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:31,031 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:23:31,031 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:23:31,032 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:23:31,032 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:23:31,037 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:23:31,037 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:35:23,827 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:35:23,848 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:35:23,849 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:35:23,849 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:35:23,849 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:35:23,849 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:35:23,850 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:35:23,850 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:35:23,854 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:35:23,854 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:37:01,508 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:37:01,533 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:37:01,533 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:37:01,534 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:37:01,535 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:37:01,535 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:37:01,536 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:37:01,537 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:37:01,541 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:37:01,541 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:38:06,631 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:38:06,651 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:38:06,652 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:38:06,652 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:38:06,652 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:38:06,652 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:38:06,653 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:38:06,653 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:38:06,657 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:38:06,658 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:39:24,173 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:39:24,195 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:39:24,196 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:39:24,196 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:39:24,197 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:39:24,197 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:39:24,198 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:39:24,198 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:39:24,203 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:39:24,204 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:40:39,984 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:40:40,005 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:40:40,005 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:40:40,006 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:40:40,006 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:40:40,006 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:40:40,007 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:40:40,007 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:40:40,012 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:40:40,013 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:42:23,729 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:42:23,767 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:42:23,768 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:42:23,768 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:42:23,768 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:42:23,769 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:42:23,769 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:42:23,769 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:42:23,775 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:42:23,776 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:43:52,911 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:43:52,933 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:43:52,934 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:43:52,934 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:43:52,935 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:43:52,935 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:43:52,936 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:43:52,936 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:43:52,940 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:43:52,940 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:44:26,352 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:44:26,383 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:44:26,384 - app.config - INFO - Resolved InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:44:26,384 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:44:26,385 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:44:26,385 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL277500
+2026-02-28 00:44:26,385 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL277500
+2026-02-28 00:44:26,385 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:44:26,390 - app.config - INFO - Searching ChEMBL molecule for InChIKey: UHOVQNZJYSORNB-UHFFFAOYSA-N
+2026-02-28 00:44:26,390 - app.config - INFO - ChEMBL molecule found: CHEMBL277500
+2026-02-28 00:44:31,186 - app.config - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=CN1C=NC2=C1C(=O)N(C(=O)N2)CO)O
+2026-02-28 00:44:31,189 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:44:32,075 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:44:32,076 - app.config - INFO - Resolved InChIKey: None
+2026-02-28 00:44:32,076 - app.config - INFO - Searching ChEMBL molecule for InChIKey: None
+2026-02-28 00:44:33,056 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/molecule.json
+2026-02-28 00:44:33,059 - app.config - INFO - ChEMBL molecule found: CHEMBL6329
+2026-02-28 00:44:33,060 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL6329
+2026-02-28 00:44:33,479 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/activity.json?molecule_chembl_id=CHEMBL6329&limit=20
+2026-02-28 00:44:33,482 - app.config - INFO - Retrieved 2 bioactivity records for CHEMBL6329
+2026-02-28 00:44:33,483 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:44:33,487 - app.config - INFO - Searching ChEMBL molecule for InChIKey: None
+2026-02-28 00:44:33,487 - app.config - INFO - ChEMBL molecule found: CHEMBL6329
+2026-02-28 00:44:50,969 - app.config - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=O)O
+2026-02-28 00:44:50,971 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-28 00:44:52,556 - app.config - INFO - Starting compound bioactivity pipeline
+2026-02-28 00:44:52,557 - app.config - INFO - Resolved InChIKey: HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-28 00:44:52,557 - app.config - INFO - Searching ChEMBL molecule for InChIKey: HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-28 00:44:52,953 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/molecule.json?molecule_structures__standard_inchi_key=HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-28 00:44:52,956 - app.config - INFO - ChEMBL molecule found: CHEMBL521
+2026-02-28 00:44:52,956 - app.config - INFO - Fetching ChEMBL bioactivity for CHEMBL521
+2026-02-28 00:44:53,412 - app.config - INFO - Successfully fetched: https://www.ebi.ac.uk/chembl/api/data/activity.json?molecule_chembl_id=CHEMBL521&limit=20
+2026-02-28 00:44:53,416 - app.config - INFO - Retrieved 20 bioactivity records for CHEMBL521
+2026-02-28 00:44:53,416 - app.config - INFO - Bioactivity pipeline completed
+2026-02-28 00:44:53,420 - app.config - INFO - Searching ChEMBL molecule for InChIKey: HEFNNWSXXWATRW-UHFFFAOYSA-N
+2026-02-28 00:44:53,422 - app.config - INFO - ChEMBL molecule found: CHEMBL521

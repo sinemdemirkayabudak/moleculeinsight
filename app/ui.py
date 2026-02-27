@@ -1,6 +1,9 @@
+import pandas as pd
 import streamlit as st
 from rdkit.Chem import Draw
 
+from app.chembl import get_chembl_molecule, get_compound_bioactivity_from_mol
+from app.components.cards import render_metric_card
 from app.molecule import get_molecule, get_rdkit_properties, lipinski_rules
 from app.pubchem import get_pubchem_metadata
 from app.utils import safe_execute
@@ -60,7 +63,7 @@ def render_app():
 
         violations = sum(not passed for passed in rules.values())
 
-        tab1, tab2 = st.tabs(["Properties", "Lipinski Rules"])
+        tab1, tab2, tab3 = st.tabs(["Properties", "Lipinski Rules", "Bioactivity"])
 
         with tab1:
             col1, col2 = st.columns(2, gap="small")
@@ -77,6 +80,8 @@ def render_app():
                     st.subheader("Properties")
                     st.write(f"- IUPAC Name: {meta['iupac']}")
                     st.write(f"- Common Name: {meta['common']}")
+                    st.write(f"- CID: {meta['cid']}")
+                    st.write(f"- InChIKey: {meta['inchikey']}")
                     st.write(f"- Molecular Weight (MW): {mw:.2f}")
                     st.write(f"- LogP (octanol-water): {logp:.2f}")
                     st.write(f"- Topological Polar Surface Area (TPSA): {tpsa:.2f}")
@@ -91,3 +96,32 @@ def render_app():
                     st.text(f"- {rule}   \t{'✔ Passed' if passed else '✘ Violated'}")
                 st.write("\n")
                 st.write(f"Total violations: {violations}")
+
+        with tab3:
+            with st.container(height=700):
+                st.subheader("Bioactivity Evidence (ChEMBL)")
+                bioactivity_data = get_compound_bioactivity_from_mol(mol)
+                if bioactivity_data.get("success"):
+                    df = pd.DataFrame(bioactivity_data["bioactivity"]["activities"])
+
+                    st.dataframe(df)
+
+                    st.subheader("📊 Compound Summary")
+
+                    col1, col2, col3 = st.columns(3)
+
+                    with col1:
+                        render_metric_card("PubChem CID", meta["cid"], "🧬")
+
+                    with col2:
+                        chembl_id = get_chembl_molecule(meta["inchikey"]).get("chembl_id", "N/A")
+
+                        render_metric_card("ChEMBL ID", chembl_id, "🧪")
+
+                    with col3:
+                        count = bioactivity_data["bioactivity"]["count"]
+
+                        render_metric_card("Bioactivity Records", count, "📑")
+
+                else:
+                    st.error("Bioactivity data retrieval failed")

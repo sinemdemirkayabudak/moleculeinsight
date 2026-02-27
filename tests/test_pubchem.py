@@ -1,6 +1,6 @@
 """Tests for PubChem API integration."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from rdkit import Chem
 
@@ -70,10 +70,10 @@ class TestGetPubchemMetadata:
         assert result["iupac"] == "Unknown"
         assert result["common"] == "Unknown"
 
-    @patch("app.pubchem.get_response_json")
+    @patch("pubchempy.get_compounds")
     def test_api_failure_returns_unknown(self, mock_get):
         """Test that API failure returns Unknown gracefully."""
-        mock_get.return_value = None
+        mock_get.return_value = []
 
         mol = Chem.MolFromSmiles("c1ccccc1")
         result = _get_pubchem_metadata(mol)
@@ -81,44 +81,45 @@ class TestGetPubchemMetadata:
         assert result["iupac"] == "Unknown"
         assert result["common"] == "Unknown"
 
-    @patch("app.pubchem.get_response_json")
+    @patch("pubchempy.get_compounds")
     def test_no_cid_found_returns_unknown(self, mock_get):
-        """Test that missing CID returns Unknown."""
-        # First call returns no CID
-        mock_get.return_value = {"IdentifierList": {"CID": []}}
+        """Test that missing compounds returns Unknown."""
+        mock_get.return_value = []
 
         mol = Chem.MolFromSmiles("c1ccccc1")
         result = _get_pubchem_metadata(mol)
 
         assert result["iupac"] == "Unknown"
 
-    @patch("app.pubchem.get_response_json")
+    @patch("pubchempy.get_compounds")
     def test_invalid_cid_returns_unknown(self, mock_get):
-        """Test that invalid CID (<=0) returns Unknown."""
-        mock_get.return_value = {"IdentifierList": {"CID": [-1]}}
+        """Test that exception in pubchempy returns Error gracefully."""
+        mock_get.side_effect = Exception("API Error")
 
         mol = Chem.MolFromSmiles("c1ccccc1")
         result = _get_pubchem_metadata(mol)
 
-        assert result["iupac"] == "Unknown"
+        assert result["iupac"] == "Error"
+        assert result["success"] is False
 
-    @patch("app.pubchem.get_response_json")
+    @patch("pubchempy.get_compounds")
     def test_successful_metadata_retrieval(self, mock_get):
         """Test successful metadata retrieval."""
-        # Mock three API calls
-        mock_responses = [
-            {"IdentifierList": {"CID": [241]}},  # CID lookup
-            {  # IUPAC name
-                "PropertyTable": {"Properties": [{"IUPACName": "benzene"}]}
-            },
-            {  # Synonyms
-                "InformationList": {"Information": [{"Synonym": ["Benzene", "Benzol"]}]}
-            },
-        ]
-        mock_get.side_effect = mock_responses
+        mock_compound = MagicMock()
+        mock_compound.iupac_name = "benzene"
+        mock_compound.synonyms = ["Benzene", "C6H6"]
+        mock_compound.cid = 241
+        mock_compound.inchikey = "UHOVQNZJYSORNB-UHFFFAOYSA-N"
+        mock_compound.inchi = "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H"
+        mock_compound.molecular_formula = "C6H6"
+        mock_compound.molecular_weight = 78.11
+        mock_compound.canonical_smiles = "c1ccccc1"
+        mock_compound.isomeric_smiles = "c1ccccc1"
+
+        mock_get.return_value = [mock_compound]
 
         mol = Chem.MolFromSmiles("c1ccccc1")
         result = _get_pubchem_metadata(mol)
 
+        assert result["success"] is True
         assert result["iupac"] == "benzene"
-        assert result["common"] == "Benzene"

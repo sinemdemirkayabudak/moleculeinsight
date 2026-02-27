@@ -7,17 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Configuration
-PUBCHEM_CID_URL = os.getenv(
-    "PUBCHEM_CID_URL", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/{}/cids/JSON"
-)
-PUBCHEM_PROP_URL = os.getenv(
-    "PUBCHEM_PROP_URL",
-    "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{}/property/IUPACName/JSON",
-)
-PUBCHEM_SYN_URL = os.getenv(
-    "PUBCHEM_SYN_URL", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{}/synonyms/JSON"
-)
-
+CHEMBL_BASE_URL = os.getenv("CHEMBL_BASE_URL", "https://www.ebi.ac.uk/chembl/api/data")
 
 # Setup logging
 logging.basicConfig(
