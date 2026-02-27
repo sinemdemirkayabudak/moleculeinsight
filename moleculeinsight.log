@@ -1,0 +1,32 @@
+2026-02-27 01:28:08,112 - __main__ - INFO - Created molecule from SMILES: CC(=O)OC1=CC=CC=C1C(=O)O
+2026-02-27 01:28:08,978 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(=O)Oc1ccccc1C(=O)O/cids/JSON
+2026-02-27 01:29:40,197 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/IUPACName/JSON
+2026-02-27 01:29:40,693 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/synonyms/JSON
+2026-02-27 01:31:02,639 - __main__ - INFO - Created molecule from SMILES: c1ccccc1
+2026-02-27 01:31:03,788 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/c1ccccc1/cids/JSON
+2026-02-27 01:31:04,257 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/property/IUPACName/JSON
+2026-02-27 01:31:04,743 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/synonyms/JSON
+2026-02-27 01:31:31,481 - __main__ - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=CN1C=NC2=C1C(=O)N(C(=O)N2)CO)O
+2026-02-27 01:31:32,206 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(C)Cc1ccc(C(C)C(O)=Cn2cnc3[nH]c(=O)n(CO)c(=O)c32)cc1/cids/JSON
+2026-02-27 01:31:44,690 - __main__ - INFO - Created molecule from SMILES: CC(C)CC1=CC=C(C=C1)C(C)C(=O)O
+2026-02-27 01:31:45,450 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(C)Cc1ccc(C(C)C(=O)O)cc1/cids/JSON
+2026-02-27 01:31:46,012 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/3672/property/IUPACName/JSON
+2026-02-27 01:31:46,748 - __main__ - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/3672/synonyms/JSON
+2026-02-27 01:38:28,476 - __main__ - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 01:39:22,618 - __main__ - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 01:42:24,425 - __main__ - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 02:02:32,227 - app.config - INFO - Created molecule from SMILES: c1ccccc1
+2026-02-27 02:02:32,231 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 02:02:33,063 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/c1ccccc1/cids/JSON
+2026-02-27 02:02:33,665 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/property/IUPACName/JSON
+2026-02-27 02:02:34,144 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/241/synonyms/JSON
+2026-02-27 02:15:09,872 - app.config - INFO - Created molecule from SMILES: CC(=O)OC1=CC=CC=C1C(=O)O
+2026-02-27 02:15:09,875 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 02:15:10,658 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(=O)Oc1ccccc1C(=O)O/cids/JSON
+2026-02-27 02:15:11,217 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/IUPACName/JSON
+2026-02-27 02:15:11,806 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/synonyms/JSON
+2026-02-27 13:54:19,667 - app.config - INFO - Created molecule from SMILES: CC(=O)OC1=CC=CC=C1C(=O)O
+2026-02-27 13:54:19,673 - app.config - INFO - Lipinski rules evaluated: 0 violation(s)
+2026-02-27 13:54:22,572 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/CC(=O)Oc1ccccc1C(=O)O/cids/JSON
+2026-02-27 13:54:23,051 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/IUPACName/JSON
+2026-02-27 13:54:23,524 - app.config - INFO - Successfully fetched: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/synonyms/JSON

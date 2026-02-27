@@ -1,0 +1,26 @@
+molecule_id,smiles,activity_label,source,notes
+MOL_001,CC(=O)OC1=CC=CC=C1C(=O)O,1.0,known_drug,Aspirin
+MOL_002,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O,1.0,known_drug,Ibuprofen
+MOL_003,C1=CC=C(C=C1)O,0.0,known_drug,Phenol
+MOL_004,CN1C=NC2=C1C(=O)N(C(=O)N2)C,1.0,known_drug,Caffeine metabolite
+MOL_005,CCN(CC)CCCC(C)NC1=C2C=CC(=CC2=NC=C1)Cl,1.0,known_drug,Chloroquine
+MOL_006,C1=CC=C(C=C1)C=O,0.0,synthetic,Benzaldehyde
+MOL_007,C(C(=O)O)N,0.0,known_drug,Glycine
+MOL_008,CC(C)NCC(O)CO,0.0,synthetic,Propanolamine
+MOL_009,,0.0,corrupted,Empty SMILES
+MOL_010,INVALID_SMILES,0.0,corrupted,Text noise input
+MOL_011,C1CC1C(=O,0.0,corrupted,Truncated SMILES
+MOL_012,CC(C)(C)C1=CC=CC=C1,0.0,synthetic,tert-butyl benzene
+MOL_013,ClC1=CC=CC=C1Cl,0.0,synthetic,Dichlorobenzene
+MOL_014,O=C(O)C(O)=O,0.0,small_molecule,Oxalic acid
+MOL_015,C[C@H](O)C(=O)O,1.0,biological,Lactic acid stereochemistry
+MOL_016,CC[C@H](O)C1=CC=CC=C1,1.0,drug_like,Chiral aromatic alcohol
+MOL_017,CCCCCCCCCCCCCCCC,0.0,edge_case,Long alkane chain
+MOL_018,C1=CC=CC=C1C2=CC=CC=C2,0.0,polyaromatic,Biphenyl
+MOL_019,COC1=CC=CC=C1O,1.0,natural_product,Guaiacol
+MOL_020,N[C@@H](CC1=CC=CC=C1)C(=O)O,1.0,amino_acid,Phenylalanine
+MOL_021,CCO,0.0,very_small,Ethyl alcohol
+MOL_022,CN(C)C(=O)N,0.0,small_molecule,Dimethyl urea
+MOL_023,C1=CC2=CC=CC=C2C=C1,0.0,aromatic_natural,Naphthalene
+MOL_024,COC(=O)C1=CC=CC=C1OC,1.0,drug_like,Dimethoxy ester
+MOL_025,CC(=O)NCCCCCC(=O)O,0.0,synthetic,Long chain amide acid

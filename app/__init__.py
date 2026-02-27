@@ -1,0 +1,1 @@
+"""MoleculeInsight application package."""

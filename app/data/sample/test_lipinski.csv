@@ -1,0 +1,17 @@
+molecule_id,smiles,activity_label,source,notes
+MOL_001,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O,1.0,known_drug,Ibuprofen - Expected to pass Lipinski rule-of-5 (MW ~206, low HBA/HBD)
+MOL_002,CC[C@H](C)[C@@H](NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)C(C)(C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)C(C)(C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)C(C)(C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)NC(=O)[C@H](C)),1.0,known_drug,Cyclosporine-like macrocycle - Expected Lipinski violation (Very high MW, many H-bond donors/acceptors)
+MOL_003,,0.0,corrupted,Empty SMILES - Should trigger validation error handling
+MOL_004,INVALID_SMILES,0.0,corrupted,Invalid text input - RDKit parsing must fail safely
+MOL_005,C1CC1C(=O,0.0,corrupted,Malformed ring closure - Incomplete SMILES structure
+MOL_006,C1=CC=CC=C1,0.0,control,Benzene - Small aromatic control molecule (Should pass Lipinski)
+MOL_007,C(C(=O)O)N,0.0,control,Glycine - Small amino acid (Very low MW, very polar)
+MOL_008,CC(C)NCC(O)CO,0.0,control,Propanolamine - Small polar organic molecule
+MOL_009,CC(=O)OC1=CC=CC=C1C(=O)O,1.0,known_drug,Aspirin - Expected to pass Lipinski rules
+MOL_010,CCCCCCCCCCCCCCCCCCCCCCCCCCCC,0.0,edge_case,Very long alkane chain - High LogP violation candidate
+MOL_011,C1=CC2=CC=CC=C2C=C1,0.0,aromatic,Naphthalene - Hydrophobic aromatic system
+MOL_012,COC1=CC=CC=C1O,1.0,natural_product,Guaiacol - Natural aromatic compound
+MOL_013,N[C@@H](CC1=CC=CC=C1)C(=O)O,1.0,amino_acid,Phenylalanine - Chiral amino acid
+MOL_014,CCO,0.0,small_molecule,Ethanol - Very small molecule control
+MOL_015,CN(C)C(=O)N,0.0,synthetic,Dimethyl urea - Multiple HBA/HBD test case
+MOL_016,ClC1=CC=CC=C1Cl,0.0,halogenated,Dichlorobenzene - Hydrophobic halogenated compound
