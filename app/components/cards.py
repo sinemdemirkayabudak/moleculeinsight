@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def render_metric_card(title, value, emoji):
+def render_metric_card(title, value):
 
     st.markdown(
         f"""
@@ -17,7 +17,7 @@ def render_metric_card(title, value, emoji):
             opacity:0.8;
             margin-bottom:6px;
         ">
-            {emoji} {title}
+            {title}
         </div>
 
         <div style="

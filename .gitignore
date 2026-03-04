@@ -18,3 +18,7 @@ wheels/
 .coverage.*
 htmlcov/
 .hypothesis/
+
+# backups and logs
+.history/
+*.log

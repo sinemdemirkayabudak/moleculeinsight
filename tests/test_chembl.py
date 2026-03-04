@@ -238,3 +238,26 @@ class TestGetCompoundBioactivityFromMol:
 
         assert result["success"] is False
         assert result["stage"] == "chembl_lookup"
+    @patch("app.chembl.get_pubchem_metadata")
+    @patch("app.chembl.get_chembl_bioactivity")
+    @patch("app.chembl.get_chembl_molecule")
+    def test_pipeline_with_custom_limit(self, mock_molecule, mock_bioactivity, mock_pubchem):
+        """Test pipeline passes custom limit parameter to bioactivity retrieval."""
+        mock_molecule.return_value = {
+            "success": True,
+            "chembl_id": "CHEMBL25",
+        }
+        mock_bioactivity.return_value = {
+            "success": True,
+            "count": 50,
+            "activities": [{"target_name": f"Target {i}"} for i in range(50)],
+        }
+        mock_pubchem.return_value = {"inchikey": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N", "success": True}
+
+        mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+        result = get_compound_bioactivity_from_mol(mol, limit=50)
+
+        assert result["success"] is True
+        assert result["bioactivity"]["count"] == 50
+        # Verify the limit was passed to get_chembl_bioactivity
+        mock_bioactivity.assert_called_once_with("CHEMBL25", limit=50)

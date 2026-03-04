@@ -43,7 +43,7 @@ def get_clean_common_name(synonyms: list[str]) -> str:
 def _get_pubchem_metadata(mol: Mol) -> dict:
     try:
         if mol is None:
-            return {"iupac": "Unknown", "common": "Unknown", "success": False}
+            return {"iupac": "Unknown", "common": "Unknown", "cid": None, "inchikey": None, "success": False}
 
         smiles = Chem.MolToSmiles(mol, canonical=True)
 
@@ -53,8 +53,9 @@ def _get_pubchem_metadata(mol: Mol) -> dict:
             return {
                 "iupac": "Unknown",
                 "common": "Unknown",
+                "cid": None,
+                "inchikey": None,
                 "success": False,
-                "query_smiles": smiles,
             }
         # There might be multiple possible matches
         # Take the first (best-ranked, highest confidence) result
@@ -65,28 +66,19 @@ def _get_pubchem_metadata(mol: Mol) -> dict:
         common = get_clean_common_name(synonyms)
 
         return {
-            # 🔹 OLD KEYS (unchanged → no disruption)
             "iupac": iupac,
             "common": common,
-            # 🔹 NEW SAFE FIELDS
-            "success": True,
-            "query_smiles": smiles,
             "cid": compound.cid,
             "inchikey": compound.inchikey,
-            "inchi": compound.inchi,
-            "molecular_formula": compound.molecular_formula,
-            "molecular_weight": compound.molecular_weight,
-            "canonical_smiles": compound.canonical_smiles,
-            "isomeric_smiles": compound.isomeric_smiles,
-            "synonyms": synonyms[:10] if synonyms else [],
+            "success": True,
         }
 
     except Exception as e:
-        logger.exception(f"Error retrieving PubChem metadata: {e}")
-        st.error(str(e))
-        return {"iupac": "Error", "common": "Error", "success": False}
+        logger.warning(f"PubChem metadata retrieval error: {e}")
+        return {"iupac": "Unknown", "common": "Unknown", "cid": None, "inchikey": None, "success": False}
 
 
+@st.cache_data(ttl=86400)
 @st.cache_data(ttl=86400)
 def get_pubchem_metadata(mol: Mol) -> dict[str, str]:
     return _get_pubchem_metadata(mol)

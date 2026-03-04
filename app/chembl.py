@@ -1,12 +1,16 @@
+import streamlit as st
+
 from app.config import CHEMBL_BASE_URL, logger
 from app.pubchem import get_pubchem_metadata
 from app.utils import get_response_json
 
 
+@st.cache_data(ttl=86400)
 def get_chembl_molecule(inchikey: str) -> dict:
     """
     Resolve ChEMBL molecule entry using InChIKey.
     Returns molecule metadata including ChEMBL ID.
+    Cached for 1 hour to avoid redundant API calls.
     """
 
     try:
@@ -23,7 +27,7 @@ def get_chembl_molecule(inchikey: str) -> dict:
         molecules = data.get("molecules", [])
 
         if not molecules:
-            logger.warning("No ChEMBL match found for InChIKey: {inchikey}")
+            logger.warning(f"No ChEMBL match found for InChIKey: {inchikey}")
             return {"success": False, "message": "No ChEMBL match found"}
 
         # Take the highest-confidence match returned by ChEMBL
@@ -46,9 +50,11 @@ def get_chembl_molecule(inchikey: str) -> dict:
         return {"success": False, "error": str(e)}
 
 
+@st.cache_data(ttl=86400)
 def get_chembl_bioactivity(chembl_id: str, limit: int = 20) -> dict:
     """
     Retrieve bioactivity data for a ChEMBL compound.
+    Cached for 1 hour to avoid redundant API calls.
     """
 
     try:
@@ -83,7 +89,7 @@ def get_chembl_bioactivity(chembl_id: str, limit: int = 20) -> dict:
         return {"success": False, "error": str(e)}
 
 
-def get_compound_bioactivity_from_mol(mol):
+def get_compound_bioactivity_from_mol(mol, limit: int = 20):
     try:
         logger.info("Starting compound bioactivity pipeline")
 
@@ -105,7 +111,7 @@ def get_compound_bioactivity_from_mol(mol):
 
         chembl_id = chembl_data["chembl_id"]
 
-        bioactivity = get_chembl_bioactivity(chembl_id)
+        bioactivity = get_chembl_bioactivity(chembl_id, limit=limit)
 
         logger.info("Bioactivity pipeline completed")
 

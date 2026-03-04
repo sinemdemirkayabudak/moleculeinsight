@@ -10,6 +10,7 @@ dependencies = [
     "streamlit>=1.54.0",
     "requests>=2.31.0",
     "pubchempy>=1.0.5",
+    "matplotlib>=3.10.8",
 ]
 
 [dependency-groups]
@@ -42,6 +43,13 @@ ignore = ["E501"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+# Import sorting via Ruff (I rule - already enabled above)
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+known_first_party = ["app"]
 
 # ------------------------
 # Pytest Configuration

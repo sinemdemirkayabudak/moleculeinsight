@@ -1,9 +1,7 @@
 """Tests for PubChem API integration."""
 
 from unittest.mock import MagicMock, patch
-
 from rdkit import Chem
-
 from app.pubchem import _get_pubchem_metadata, get_clean_common_name
 
 
@@ -93,13 +91,14 @@ class TestGetPubchemMetadata:
 
     @patch("pubchempy.get_compounds")
     def test_invalid_cid_returns_unknown(self, mock_get):
-        """Test that exception in pubchempy returns Error gracefully."""
+        """Test that exception in pubchempy returns Unknown gracefully."""
         mock_get.side_effect = Exception("API Error")
 
         mol = Chem.MolFromSmiles("c1ccccc1")
         result = _get_pubchem_metadata(mol)
 
-        assert result["iupac"] == "Error"
+        assert result["iupac"] == "Unknown"
+        assert result["common"] == "Unknown"
         assert result["success"] is False
 
     @patch("pubchempy.get_compounds")
@@ -110,11 +109,6 @@ class TestGetPubchemMetadata:
         mock_compound.synonyms = ["Benzene", "C6H6"]
         mock_compound.cid = 241
         mock_compound.inchikey = "UHOVQNZJYSORNB-UHFFFAOYSA-N"
-        mock_compound.inchi = "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H"
-        mock_compound.molecular_formula = "C6H6"
-        mock_compound.molecular_weight = 78.11
-        mock_compound.canonical_smiles = "c1ccccc1"
-        mock_compound.isomeric_smiles = "c1ccccc1"
 
         mock_get.return_value = [mock_compound]
 
@@ -123,3 +117,5 @@ class TestGetPubchemMetadata:
 
         assert result["success"] is True
         assert result["iupac"] == "benzene"
+        assert result["cid"] == 241
+        assert result["inchikey"] == "UHOVQNZJYSORNB-UHFFFAOYSA-N"

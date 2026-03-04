@@ -1,0 +1,10 @@
+smiles,name
+CCO,Ethanol_ref
+CCOC,EthylMethylEther
+CCCC,Butane
+CC(=O)OC,MethylAcetate
+c1ccccc1O,Phenol
+CC(=O)N,Acetamide
+CCCN,Propylamine
+COC,DimethylEther
+CO,Methanol
