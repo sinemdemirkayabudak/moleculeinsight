@@ -1,7 +1,9 @@
 """Tests for PubChem API integration."""
 
 from unittest.mock import MagicMock, patch
+
 from rdkit import Chem
+
 from app.pubchem import _get_pubchem_metadata, get_clean_common_name
 
 

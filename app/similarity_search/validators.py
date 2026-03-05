@@ -19,9 +19,7 @@ logger.propagate = False  # Prevent propagation to parent loggers (stops duplica
 logger.handlers.clear()
 
 handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
@@ -29,7 +27,7 @@ logger.addHandler(handler)
 def validate_parameters(radius, top_n):
     """
     Validate fingerprint and ranking parameters.
-    
+
     Raises:
         ValueError: If any parameter is invalid.
     """
@@ -43,20 +41,20 @@ def validate_parameters(radius, top_n):
 def validate_dataframe(df, name, required_columns):
     """
     Validate that dataframe is non-empty and contains required columns.
-    
+
     Parameters:
         df: pandas DataFrame
         name: Name of the dataframe (for logging)
         required_columns: List of column names that must exist
-        
+
     Raises:
         ValueError: If dataframe is empty or missing columns.
     """
     if df.empty:
         raise ValueError(f"{name} is empty")
-    
+
     missing_cols = [col for col in required_columns if col not in df.columns]
     if missing_cols:
         raise ValueError(f"{name} missing columns: {missing_cols}")
-    
+
     logger.debug(f"{name} validation passed")

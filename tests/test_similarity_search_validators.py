@@ -39,10 +39,7 @@ class TestValidateDataframe:
 
     def test_valid_dataframe(self):
         """Test valid dataframe with required columns."""
-        df = pd.DataFrame({
-            "smiles": ["CC", "CCO"],
-            "name": ["ethane", "ethanol"]
-        })
+        df = pd.DataFrame({"smiles": ["CC", "CCO"], "name": ["ethane", "ethanol"]})
         validate_dataframe(df, "test", ["smiles", "name"])
 
     def test_empty_dataframe(self):

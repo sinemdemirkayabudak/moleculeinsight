@@ -26,7 +26,7 @@ class TestGetMorganFp:
         fp0 = get_morgan_fp(mol, radius=0)
         fp2 = get_morgan_fp(mol, radius=2)
         fp5 = get_morgan_fp(mol, radius=5)
-        
+
         assert fp0 is not None
         assert fp2 is not None
         assert fp5 is not None
@@ -39,7 +39,7 @@ class TestGetMorganFp:
         mol2 = Chem.MolFromSmiles("CCO")
         fp1 = get_morgan_fp(mol1, radius=2)
         fp2 = get_morgan_fp(mol2, radius=2)
-        
+
         assert TanimotoSimilarity(fp1, fp2) == 1.0
 
     def test_none_molecule(self):
@@ -51,10 +51,10 @@ class TestGetMorganFp:
         """Test fingerprints for simple vs complex molecules."""
         simple = Chem.MolFromSmiles("C")
         complex_mol = Chem.MolFromSmiles("c1ccc2c(c1)ccc3c2cccc3")
-        
+
         fp_simple = get_morgan_fp(simple, radius=2)
         fp_complex = get_morgan_fp(complex_mol, radius=2)
-        
+
         # Fingerprints should be different
         assert TanimotoSimilarity(fp_simple, fp_complex) < 1.0
 
@@ -66,7 +66,7 @@ class TestSimilaritySearch:
         """Test similarity of identical fingerprints."""
         mol = Chem.MolFromSmiles("CCO")
         fp = get_morgan_fp(mol, radius=2)
-        
+
         similarity = similarity_search(fp, [fp])
         assert similarity[0] == 1.0
 
@@ -74,12 +74,12 @@ class TestSimilaritySearch:
         """Test similarity between different molecules."""
         mol1 = Chem.MolFromSmiles("CCO")
         mol2 = Chem.MolFromSmiles("CC")
-        
+
         fp1 = get_morgan_fp(mol1, radius=2)
         fp2 = get_morgan_fp(mol2, radius=2)
-        
+
         similarities = similarity_search(fp1, [fp2, fp1])
-        
+
         assert len(similarities) == 2
         assert 0 <= similarities[0] < 1.0
         assert similarities[1] == 1.0
@@ -90,16 +90,16 @@ class TestSimilaritySearch:
         ref1 = Chem.MolFromSmiles("CCO")
         ref2 = Chem.MolFromSmiles("CCCO")
         ref3 = Chem.MolFromSmiles("c1ccccc1")
-        
+
         query_fp = get_morgan_fp(query, radius=2)
         ref_fps = [
             get_morgan_fp(ref1, radius=2),
             get_morgan_fp(ref2, radius=2),
             get_morgan_fp(ref3, radius=2),
         ]
-        
+
         similarities = similarity_search(query_fp, ref_fps)
-        
+
         assert len(similarities) == 3
         assert all(0 <= s <= 1.0 for s in similarities)
         # Query should be most similar to itself
@@ -110,7 +110,7 @@ class TestSimilaritySearch:
         """Test with empty reference fingerprint list."""
         query = Chem.MolFromSmiles("CCO")
         query_fp = get_morgan_fp(query, radius=2)
-        
+
         similarities = similarity_search(query_fp, [])
         assert similarities == []
 
@@ -123,16 +123,16 @@ class TestSimilaritySearch:
             Chem.MolFromSmiles("c1ccccc1"),
             Chem.MolFromSmiles("c1ccccc1C"),
         ]
-        
+
         query_fp = get_morgan_fp(query, radius=2)
         ref_fps = [get_morgan_fp(r, radius=2) for r in refs]
-        
+
         similarities = similarity_search(query_fp, ref_fps)
-        
+
         assert all(0 <= s <= 1.0 for s in similarities)
 
     def test_invalid_fingerprint_type(self):
         """Test similarity_search with invalid fingerprint type."""
         # Pass a string instead of fingerprint object
-        with pytest.raises(Exception):
+        with pytest.raises((TypeError, AttributeError)):
             similarity_search("not_a_fingerprint", ["also_not_fp"])

@@ -43,7 +43,13 @@ def get_clean_common_name(synonyms: list[str]) -> str:
 def _get_pubchem_metadata(mol: Mol) -> dict:
     try:
         if mol is None:
-            return {"iupac": "Unknown", "common": "Unknown", "cid": None, "inchikey": None, "success": False}
+            return {
+                "iupac": "Unknown",
+                "common": "Unknown",
+                "cid": None,
+                "inchikey": None,
+                "success": False,
+            }
 
         smiles = Chem.MolToSmiles(mol, canonical=True)
 
@@ -75,7 +81,13 @@ def _get_pubchem_metadata(mol: Mol) -> dict:
 
     except Exception as e:
         logger.warning(f"PubChem metadata retrieval error: {e}")
-        return {"iupac": "Unknown", "common": "Unknown", "cid": None, "inchikey": None, "success": False}
+        return {
+            "iupac": "Unknown",
+            "common": "Unknown",
+            "cid": None,
+            "inchikey": None,
+            "success": False,
+        }
 
 
 @st.cache_data(ttl=86400)

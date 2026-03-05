@@ -238,6 +238,7 @@ class TestGetCompoundBioactivityFromMol:
 
         assert result["success"] is False
         assert result["stage"] == "chembl_lookup"
+
     @patch("app.chembl.get_pubchem_metadata")
     @patch("app.chembl.get_chembl_bioactivity")
     @patch("app.chembl.get_chembl_molecule")
