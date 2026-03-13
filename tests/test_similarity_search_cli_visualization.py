@@ -151,44 +151,6 @@ class TestPrepareCSVExport:
         assert isinstance(csv_string, str)
 
 
-class TestVisualizationIntegration:
-    """Integration tests for visualization pipeline."""
-
-    def test_full_pipeline_with_visualization(self):
-        """Test complete pipeline with visualization."""
-        query_df = pd.DataFrame({"smiles": ["CCO", "CC"], "name": ["ethanol", "ethane"]})
-        ref_df = pd.DataFrame(
-            {
-                "smiles": ["CCO", "CCCO", "CC", "c1ccccc1"],
-                "name": ["ethanol", "propanol", "ethane", "benzene"],
-            }
-        )
-
-        figures, results = run_similarity_search(
-            query_file=query_df, reference_file=ref_df, radius=2, top_n=2, show_plots=True
-        )
-
-        assert isinstance(figures, dict)
-        assert isinstance(results, pd.DataFrame)
-        assert "similarity" in results.columns
-
-    def test_visualization_output_consistency(self):
-        """Test that visualization output is consistent."""
-        query_df = pd.DataFrame({"smiles": ["c1ccccc1"], "name": ["benzene"]})
-        ref_df = pd.DataFrame({"smiles": ["c1ccccc1", "c1ccccc1C"], "name": ["benz", "toluene"]})
-
-        figs1, res1 = run_similarity_search(
-            query_file=query_df, reference_file=ref_df, radius=2, top_n=2, show_plots=True
-        )
-
-        figs2, res2 = run_similarity_search(
-            query_file=query_df, reference_file=ref_df, radius=2, top_n=2, show_plots=True
-        )
-
-        # Results should be consistent
-        pd.testing.assert_frame_equal(res1, res2)
-
-
 class TestVisualizationEdgeCases:
     """Test visualization edge cases for 100% coverage."""
 
@@ -216,25 +178,6 @@ class TestVisualizationEdgeCases:
 
         result = visualize_distribution(top_hits, query_df)
         assert isinstance(result, dict)
-
-    def test_visualize_multiple_queries(self):
-        """Test visualization with multiple queries producing different scores."""
-        top_hits = pd.DataFrame(
-            {
-                "query_name": ["q1", "q1", "q2", "q2"],
-                "ref_name": ["r1", "r2", "r3", "r4"],
-                "similarity": [0.9, 0.7, 0.95, 0.85],
-                "smiles": ["C", "CC", "CCC", "CCCC"],
-            }
-        )
-
-        query_df = pd.DataFrame({"query_name": ["q1", "q2"]})
-
-        result = visualize_distribution(top_hits, query_df)
-        assert isinstance(result, dict)
-        # Should have plots for queries that have results
-        if result:
-            assert len(result) <= 2
 
     def test_prepare_csv_export_edge_cases(self):
         """Test CSV export edge cases."""

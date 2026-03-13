@@ -91,6 +91,5 @@ def _get_pubchem_metadata(mol: Mol) -> dict:
 
 
 @st.cache_data(ttl=86400)
-@st.cache_data(ttl=86400)
 def get_pubchem_metadata(mol: Mol) -> dict[str, str]:
     return _get_pubchem_metadata(mol)

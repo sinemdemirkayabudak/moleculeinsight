@@ -1,0 +1,14 @@
+{
+  "best_model": "XGBoost",
+  "test_metrics": {
+    "rf_r2": 0.622484000890213,
+    "xgb_r2": 0.7018078889038828
+  },
+  "cv_metrics": {
+    "rf_cv_r2_mean": 0.6205930874151666,
+    "rf_cv_r2_std": 0.014364090396908506,
+    "xgb_cv_r2_mean": 0.7006876677508911,
+    "xgb_cv_r2_std": 0.02387035410020052
+  },
+  "improvement_vs_morgan_only": "+1.8% (from 0.6952 to 0.7018)"
+}

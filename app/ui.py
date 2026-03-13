@@ -1,12 +1,21 @@
+# User Interface for Streamlit app - handles rendering of components,
+# user interactions, and display logic.
+from pathlib import Path
+
+import joblib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import streamlit as st
 from matplotlib.figure import Figure
+from matplotlib.patches import Patch
 from rdkit.Chem import Draw
 
 from app.chembl import get_compound_bioactivity_from_mol
 from app.molecule import get_molecule, get_rdkit_properties, lipinski_rules
 from app.pubchem import get_pubchem_metadata
+from app.qsar.features import compute_morgan_fingerprints, compute_rdkit_descriptors
+from app.qsar.predict import QSARPredictor
 from app.similarity_search import create_structure_image, prepare_csv_export, run_similarity_search
 from app.utils import safe_execute
 from app.validators import validate_smiles
@@ -492,6 +501,583 @@ def render_similarity_search() -> None:
         st.warning("⚠️ Please load sample data or upload both query and reference files to proceed")
 
 
+def render_qsar_dashboard() -> None:
+    """Render QSAR model prediction dashboard with visualizations.
+
+    Displays model performance plots, allows users to make predictions on new molecules
+    with SMILES input, shows SHAP feature importance explanations, and provides feature
+    interpretation reference.
+
+    Returns:
+        None. Renders Streamlit components directly.
+    """
+    if st.session_state.get("last_page") != "QSAR Model":
+        st.session_state.pop("prediction_result", None)
+    st.session_state.last_page = "QSAR Model"
+
+    st.subheader("EGFR pIC50 Prediction Model")
+
+    st.markdown("""
+    XGBoost QSAR model trained on ChEMBL bioactivity data to predict EGFR binding affinity (pIC50) from molecular structures.
+    """)
+
+    # Create 3 tabs
+    tab1, tab2, tab3 = st.tabs(["Model Performance", "Make Predictions", "Learn More"])
+
+    # ========== TAB 1: MODEL PERFORMANCE OVERVIEW ==========
+    with tab1:
+        st.markdown("""
+        This XGBoost QSAR model predicts **EGFR binding affinity (pIC50)** from molecular structures.
+        Trained on ChEMBL bioactivity data with cross-validated performance metrics.
+        """)
+
+        # Load and display performance metrics
+        metrics_path = Path(__file__).parent / "qsar" / "saved_models" / "egfr_performance.json"
+        if metrics_path.exists():
+            import json
+
+            with open(metrics_path) as f:
+                metrics = json.load(f)
+
+            # Extract XGBoost metrics (best model)
+            test_r2 = metrics.get("test_metrics", {}).get("xgb_r2", 0)
+            cv_r2_mean = metrics.get("cv_metrics", {}).get("xgb_cv_r2_mean", 0)
+            cv_r2_std = metrics.get("cv_metrics", {}).get("xgb_cv_r2_std", 0)
+
+            # Display key metrics in columns
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Test R²", f"{test_r2:.4f}")
+            with col2:
+                st.metric("Test MAE", "0.573 pIC50", help="Mean Absolute Error on test set")
+            with col3:
+                st.metric("CV R² (mean)", f"{cv_r2_mean:.4f}")
+            with col4:
+                st.metric("CV R² (std)", f"±{cv_r2_std:.4f}", help="5-fold cross-validation")
+
+        st.markdown("---")
+        st.markdown("### Performance Plots")
+
+        # Define all plots
+        plots_dir = Path(__file__).parent / "qsar" / "visualizations"
+        plot_files = {
+            "01_residuals.png": "Residuals (Predictions - Actual)",
+            "02_predictions_vs_actual.png": "Calibration Plot",
+            "03_feature_importance.png": "Top 20 Features (SHAP-based)",
+            "04_error_distribution.png": "Error Distribution",
+            "05_model_summary.png": "Model Performance Summary",
+            "06_shap_heatmap.png": "SHAP Feature Contribution Heatmap",
+        }
+
+        # Dropdown to select plot
+        selected_plot = st.selectbox(
+            "Select a plot to view:",
+            options=sorted(plot_files.keys()),
+            format_func=lambda x: plot_files[x],
+            index=4,
+            label_visibility="collapsed",
+        )
+
+        # Display selected plot
+        plot_path = plots_dir / selected_plot
+        if plot_path.exists():
+            st.image(str(plot_path), width="stretch")
+
+    # ========== TAB 2: PREDICTION INTERFACE ==========
+    with tab2:
+        st.markdown("""
+        Enter a **SMILES string** to predict its binding affinity (pIC50) to EGFR.
+        The model will show the predicted value and binding strength interpretation.
+        """)
+
+        # Initialize session state for SMILES input
+        if "smiles_input_value" not in st.session_state:
+            st.session_state.smiles_input_value = ""
+
+        # SMILES input with example molecules
+        col1, col2 = st.columns([3, 1])
+
+        with col1:
+            st.markdown("**Enter Custom SMILES**")
+            smiles_input = st.text_input(
+                "Enter SMILES string:",
+                value=st.session_state.smiles_input_value,
+                placeholder="e.g., CC(=O)OC1=CC=CC=C1C(=O)O",
+                help="Simplified Molecular Input Line Entry System",
+                label_visibility="collapsed",
+            )
+
+            # Update session state with text input changes
+            if smiles_input:
+                st.session_state.smiles_input_value = smiles_input
+
+        with col2:
+            st.markdown("**Quick Examples**")
+            example_molecules = {
+                "Aspirin": "CC(=O)OC1=CC=CC=C1C(=O)O",
+                "Caffeine": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C",
+                "Ibuprofen": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+            }
+
+            selected_example = st.selectbox(
+                "Quick examples:",
+                options=["None"] + list(example_molecules.keys()),
+                label_visibility="collapsed",
+            )
+
+            if selected_example != "None" and selected_example:
+                st.session_state.smiles_input_value = example_molecules[selected_example]
+
+        # Make prediction when SMILES is entered
+        if smiles_input:
+            smiles_input = smiles_input.strip()
+
+            # Validate SMILES
+            is_valid, error_msg = validate_smiles(smiles_input)
+            if not is_valid:
+                st.error(f"❌ Invalid SMILES: {error_msg}")
+            else:
+                try:
+                    with st.spinner("Making prediction..."):
+                        # Get molecule object for visualization
+                        mol = get_molecule(smiles_input)
+                        if not mol:
+                            st.error("Invalid SMILES string")
+                        else:
+                            # Compute features (Morgan + RDKit)
+                            morgan_result = compute_morgan_fingerprints([smiles_input])
+                            rdkit_result = compute_rdkit_descriptors([smiles_input])
+
+                            if not (morgan_result["success"] and rdkit_result["success"]):
+                                st.error("Failed to compute molecular features")
+                            else:
+                                X_morgan = morgan_result["X"]
+                                X_rdkit = rdkit_result["X"]
+                                X_combined = np.hstack([X_morgan, X_rdkit])
+
+                                # Load model and make prediction
+                                model_path = (
+                                    Path(__file__).parent
+                                    / "qsar"
+                                    / "saved_models"
+                                    / "egfr_xgb_model.pkl"
+                                )
+                                if not model_path.exists():
+                                    st.error(
+                                        "❌ Model file not found. Please train the model first."
+                                    )
+                                else:
+                                    model = joblib.load(model_path)
+                                    y_pred = QSARPredictor.predict(model, X_combined)[0]
+
+                                    # Calculate prediction confidence interval (95%)
+                                    # Load residual standard error from model metadata
+                                    residual_std = 0.65  # Default estimate
+                                    ci_margin = 1.274  # 1.96 × 0.65 (default)
+
+                                    # Try to load actual metrics from metadata
+                                    metadata_path = (
+                                        Path(__file__).parent
+                                        / "qsar"
+                                        / "saved_models"
+                                        / "egfr_metadata.json"
+                                    )
+                                    if metadata_path.exists():
+                                        try:
+                                            with open(metadata_path) as f:
+                                                import json as json_module
+
+                                                metadata = json_module.load(f)
+                                                if "uncertainty_metrics" in metadata:
+                                                    residual_std = metadata[
+                                                        "uncertainty_metrics"
+                                                    ].get("residual_std", 0.65)
+                                                    ci_margin = metadata["uncertainty_metrics"].get(
+                                                        "ci_95_margin", 1.96 * residual_std
+                                                    )
+                                        except Exception:
+                                            pass
+
+                                    y_pred_lower = y_pred - ci_margin
+                                    y_pred_upper = y_pred + ci_margin
+
+                                    # Display prediction result
+                                    st.success("✅ Prediction Complete!")
+
+                                    # Show molecule structure and prediction
+                                    col1, col2 = st.columns([1, 1])
+
+                                    with col1:
+                                        st.markdown("**Molecular Structure**")
+                                        img = Draw.MolToImage(mol, size=(300, 300))
+                                        st.image(img, width="stretch")
+
+                                    with col2:
+                                        st.markdown("**Prediction Result**")
+
+                                        # Display prediction with confidence interval
+                                        st.metric(
+                                            "Predicted pIC50",
+                                            f"{y_pred:.2f}",
+                                            help="Higher values = stronger binding affinity",
+                                        )
+
+                                        # Show confidence interval
+                                        st.info(
+                                            f"95% Confidence Interval: **{y_pred_lower:.2f} – {y_pred_upper:.2f}** pIC50\n\n"
+                                            f"*Uncertainty range based on model training residuals. "
+                                            f"±{ci_margin:.2f} pIC50 units*"
+                                        )
+
+                                        # Interpretation guide
+                                        st.markdown("**Interpretation (EGFR binding affinity):**")
+                                        if y_pred < 3.0:
+                                            st.info(
+                                                "⚪ Not measurable / Essentially inactive (pIC50 < 3)"
+                                            )
+                                        elif y_pred < 4.0:
+                                            st.info("⚪ Inactive (pIC50 3–4, IC50 > 100 µM)")
+                                        elif y_pred < 5.0:
+                                            st.info("🟡 Weak (pIC50 4–5, IC50 10–100 µM)")
+                                        elif y_pred < 6.0:
+                                            st.info("🟠 Moderate (pIC50 5–6, IC50 1–10 µM)")
+                                        elif y_pred < 7.0:
+                                            st.info(
+                                                "🟢 Active/Lead-like (pIC50 6–7, IC50 100nM–1µM)"
+                                            )
+                                        elif y_pred < 8.0:
+                                            st.info("🟢 Strong (pIC50 7–8, IC50 10–100 nM)")
+                                        else:
+                                            st.info("🟢 Excellent (pIC50 > 8, IC50 < 10 nM)")
+
+                                    # Display feature importance plot (advanced visualization)
+                                    st.markdown("---")
+                                    st.markdown("**Feature Importance for This Prediction**")
+
+                                    try:
+                                        # Load pre-computed feature annotations from comprehensive file
+                                        morgan_annotations = {}
+                                        annotations_path = (
+                                            Path(__file__).parent
+                                            / "qsar"
+                                            / "saved_models"
+                                            / "egfr_feature_annotations.json"
+                                        )
+                                        if annotations_path.exists():
+                                            import json
+
+                                            try:
+                                                with open(annotations_path) as f:
+                                                    anno_data = json.load(f)
+                                                    # Extract Morgan bits from comprehensive file
+                                                    if "morgan_bits" in anno_data:
+                                                        morgan_annotations = {
+                                                            int(k): v
+                                                            for k, v in anno_data[
+                                                                "morgan_bits"
+                                                            ].items()
+                                                        }
+                                                    else:
+                                                        # Fallback for old format (direct dict)
+                                                        morgan_annotations = {
+                                                            int(k): v for k, v in anno_data.items()
+                                                        }
+                                            except Exception:
+                                                pass
+
+                                        # Get global feature importance from model
+                                        global_importance = model.feature_importances_
+
+                                        # Weight by feature presence in this molecule
+                                        # Features that are 1 (present) get full importance, 0 (absent) get 0
+                                        X_sample = (
+                                            X_combined.flatten()
+                                            if X_combined.ndim > 1
+                                            else X_combined
+                                        )
+                                        weighted_importance = global_importance * np.clip(
+                                            X_sample, 0, 1
+                                        )
+
+                                        # RDKit descriptors mapping
+                                        rdkit_descriptors = {
+                                            2048: "MW (Molecular Weight)",
+                                            2049: "LogP (Lipophilicity)",
+                                            2050: "TPSA (Polar Surface)",
+                                            2051: "HBD (H-Bond Donors)",
+                                            2052: "HBA (H-Bond Acceptors)",
+                                            2053: "RotBonds (Rotatable)",
+                                            2054: "AromaticRings",
+                                            2055: "RingCount",
+                                        }
+
+                                        # Get top 10 features (by weighted importance for THIS molecule)
+                                        top_indices = np.argsort(weighted_importance)[-10:][::-1]
+
+                                        # Build labels and values with Morgan bit annotations
+                                        top_features = []
+                                        top_values = []
+                                        colors_list = []
+
+                                        for idx in top_indices:
+                                            top_values.append(weighted_importance[idx])
+                                            if idx < 2048:
+                                                # Use pre-computed annotation if available
+                                                if idx in morgan_annotations:
+                                                    substructure = morgan_annotations[idx]
+                                                    if len(substructure) <= 12:
+                                                        feature_label = (
+                                                            f"Morgan_Bit{idx:04d}_{substructure}"
+                                                        )
+                                                    else:
+                                                        truncated = substructure[:8] + "*"
+                                                        feature_label = (
+                                                            f"Morgan_Bit{idx:04d}_{truncated}"
+                                                        )
+                                                else:
+                                                    feature_label = f"Morgan_Bit{idx:04d}"
+                                                top_features.append(feature_label)
+                                                colors_list.append(plt.cm.Blues(0.6))
+                                            elif idx in rdkit_descriptors:
+                                                top_features.append(rdkit_descriptors[idx])
+                                                colors_list.append(plt.cm.Greens(0.5))
+                                            else:
+                                                top_features.append(f"RDKit_{idx - 2048}")
+                                                colors_list.append(plt.cm.Greens(0.5))
+
+                                        # Create advanced bar chart with extra wide size for labels
+                                        fig, ax = plt.subplots(figsize=(15, 6))
+                                        bars = ax.barh(
+                                            range(len(top_features)),
+                                            top_values,
+                                            color=colors_list,
+                                            edgecolor="black",
+                                            linewidth=1,
+                                            alpha=0.85,
+                                        )
+
+                                        # Styling
+                                        ax.set_yticks(range(len(top_features)))
+                                        ax.set_yticklabels(top_features, fontsize=9)
+                                        ax.set_xlabel(
+                                            "Feature Importance (Weighted by Presence in Molecule)",
+                                            fontsize=11,
+                                            fontweight="bold",
+                                        )
+                                        ax.set_title(
+                                            "Top 10 Most Important Features for This EGFR Binding Prediction",
+                                            fontsize=12,
+                                            fontweight="bold",
+                                            pad=15,
+                                        )
+                                        ax.invert_yaxis()  # Highest at top
+                                        ax.grid(True, alpha=0.3, axis="x", linestyle="--")
+
+                                        # Set x-axis limit to accommodate value labels
+                                        max_x = (
+                                            max(top_values) * 1.08 if max(top_values) > 0 else 0.1
+                                        )
+                                        ax.set_xlim(0, max_x)
+
+                                        # Add value labels on bars - consistent positioning for all
+                                        for bar, val in zip(bars, top_values, strict=False):
+                                            width = bar.get_width()
+                                            ax.text(
+                                                width + max(top_values) * 0.02,
+                                                bar.get_y() + bar.get_height() / 2.0,
+                                                f"{val:.4f}",
+                                                va="center",
+                                                fontsize=8,
+                                            )
+
+                                        # Add legend
+                                        legend_elements = [
+                                            Patch(
+                                                facecolor=plt.cm.Blues(0.6),
+                                                edgecolor="black",
+                                                label="Morgan Bits (circular substructures)",
+                                            ),
+                                            Patch(
+                                                facecolor=plt.cm.Greens(0.5),
+                                                edgecolor="black",
+                                                label="RDKit Descriptors (molecular properties)",
+                                            ),
+                                        ]
+                                        ax.legend(
+                                            handles=legend_elements,
+                                            loc="lower right",
+                                            fontsize=9,
+                                            framealpha=0.95,
+                                            edgecolor="black",
+                                        )
+
+                                        # Use tight_layout to ensure everything fits
+                                        plt.tight_layout()
+                                        # Force figure to be rendered fresh
+                                        st.pyplot(fig, width="stretch")
+                                        plt.close("all")  # Close all figures to prevent caching
+
+                                        st.caption(
+                                            "Scores show per-molecule feature importance (model importance weighted by feature presence). Morgan bits include SMILES substructure annotations where available."
+                                        )
+                                    except Exception as e:
+                                        st.warning(
+                                            f"Could not display feature importance: {str(e)[:150]}"
+                                        )
+
+                                    # Store for potential later use
+                                    st.session_state.prediction_result = {
+                                        "smiles": smiles_input,
+                                        "features": X_combined,
+                                        "prediction": y_pred,
+                                        "mol": mol,
+                                    }
+
+                except Exception as e:
+                    st.error(f"❌ Error during prediction: {e}")
+
+    # ========== TAB 3: LEARN MORE ==========
+    with tab3:
+        # Load training metadata
+        metadata_path = Path(__file__).parent / "qsar" / "saved_models" / "egfr_metadata.json"
+        if metadata_path.exists():
+            with open(metadata_path) as f:
+                metadata = json.load(f)
+
+                with st.expander("Model Overview", expanded=False):
+                    st.markdown("""
+                    **What is EGFR?**
+                    
+                    EGFR (Epidermal Growth Factor Receptor) is a protein on cell surfaces that plays a crucial role in cell growth and survival. 
+                    It's a major target for cancer therapeutics, particularly in lung cancer treatment. Binding of molecules to EGFR 
+                    can block its signaling and inhibit tumor growth.
+                    
+                    **What is pIC50 & IC50?**
+                    
+                    - **IC50** (Half Maximal Inhibitory Concentration) = the concentration of a drug required to inhibit 50% of EGFR activity
+                    - **pIC50** = -log₁₀(IC50), a logarithmic transformation that converts IC50 to a more convenient scale
+                        - Higher pIC50 = Stronger binding (lower IC50)
+                        - Example: pIC50 = 6 means IC50 = 1 µM (1 micromolar)
+                    
+                    **Model Used**
+                    
+                    This model is built with **XGBoost** (Extreme Gradient Boosting), a powerful ensemble learning algorithm that combines 
+                    multiple decision trees to make predictions. XGBoost was selected because it:
+                    - Handles non-linear relationships well
+                    - Provides accurate predictions on unseen data
+                    - Ranks features by importance (useful for understanding what matters in binding)
+                    """)
+
+                with st.expander("Training & Evaluation Setup", expanded=False):
+                    total_samples = metadata["training_data"]["cleaned_molecules"]
+                    train_samples = int(total_samples * 0.8)
+                    test_samples = total_samples - train_samples
+                    raw_mols = metadata["training_data"]["raw_molecules"]
+                    cleaned_mols = metadata["training_data"]["cleaned_molecules"]
+
+                    # Data Quality Overview
+                    st.markdown("**Data Quality & Preparation**")
+                    quality_col1, quality_col2, quality_col3 = st.columns(3)
+                    with quality_col1:
+                        st.metric(
+                            "Raw Molecules", f"{raw_mols:,}", help="Initial molecules from ChEMBL"
+                        )
+                    with quality_col2:
+                        st.metric(
+                            "After Cleaning",
+                            f"{cleaned_mols:,}",
+                            help="Valid molecules for training",
+                        )
+                    with quality_col3:
+                        st.metric(
+                            "Data Retention",
+                            metadata["training_data"]["retention_rate"],
+                            help="Percentage kept after quality filtering (duplicates, invalid data removed)",
+                        )
+
+                    st.markdown("---")
+
+                    # Dataset Composition
+                    st.markdown("**Feature Engineering**")
+                    feat_col1, feat_col2 = st.columns(2)
+                    with feat_col1:
+                        st.markdown("""
+                        **Total Features:** 2,056
+                        - Morgan Fingerprints: 2,048 bits
+                        - RDKit Descriptors: 8 properties
+                        """)
+                    with feat_col2:
+                        st.markdown("""
+                        **Feature Types:**
+                        - Substructure patterns
+                        - Molecular properties
+                        - Physicochemical characteristics
+                        """)
+
+                    st.markdown("---")
+
+                    # Train/Test Split
+                    st.markdown("**Model Evaluation Strategy**")
+                    split_col1, split_col2, split_col3 = st.columns(3)
+                    with split_col1:
+                        st.metric(
+                            "Training Set",
+                            f"{train_samples:,}",
+                            help=f"{metadata['train_test_split'].split('/')[0]}% of data",
+                        )
+                    with split_col2:
+                        st.metric(
+                            "Test Set",
+                            f"{test_samples:,}",
+                            help=f"{metadata['train_test_split'].split('/')[1]}% of data",
+                        )
+                    with split_col3:
+                        st.metric(
+                            "Validation",
+                            "5-fold CV",
+                            help="Cross-validation on training set: split training data into 5 folds, train on 4, evaluate on 1, repeat 5 times",
+                        )
+
+                    st.markdown("---")
+
+                    # Model Performance
+                    st.markdown("**Model Performance & Prediction Uncertainty**")
+                    perf_col1, perf_col2 = st.columns(2)
+                    with perf_col1:
+                        st.metric("Model RMSE", "0.67 pIC50", help="Typical prediction error")
+                    with perf_col2:
+                        st.metric("CI Margin", "±1.27", help="95% confidence interval")
+
+                with st.expander("EGFR Binding Affinity Scale", expanded=False):
+                    st.markdown("""
+                    **pIC50 Interpretation for EGFR (based on real drug discovery data):**
+                    """)
+                    scale_data = pd.DataFrame(
+                        {
+                            "pIC50 Range": ["< 3", "3–4", "4–5", "5–6", "6–7", "7–8", "> 8"],
+                            "IC50 (µM equivalent)": [
+                                "> 1000 nM",
+                                "100–1000 nM",
+                                "10–100 nM",
+                                "1–10 nM",
+                                "100–1000 pM",
+                                "10–100 pM",
+                                "< 10 pM",
+                            ],
+                            "Category": [
+                                "Not measurable",
+                                "Inactive",
+                                "Weak",
+                                "Moderate",
+                                "Active/Lead-like",
+                                "Strong",
+                                "Excellent",
+                            ],
+                        }
+                    )
+                    st.dataframe(scale_data, width="stretch", hide_index=True)
+
+
 def render_app() -> None:
     """Main application renderer with sidebar navigation.
 
@@ -520,10 +1106,11 @@ def render_app() -> None:
     # Sidebar navigation with improved styling
     st.sidebar.markdown("### Analysis Mode")
 
-    col1, col2 = st.sidebar.columns(2)
+    col1, col2, col3 = st.sidebar.columns(3)
 
     single_mol = col1.button("Single\nMolecule", width="stretch", key="nav_single")
     similarity = col2.button("Similarity\nSearch", width="stretch", key="nav_similarity")
+    qsar = col3.button("QSAR\nModel", width="stretch", key="nav_qsar")
 
     st.sidebar.divider()
 
@@ -536,12 +1123,16 @@ def render_app() -> None:
         st.session_state.current_page = "Single Molecule"
     if similarity:
         st.session_state.current_page = "Similarity Search"
+    if qsar:
+        st.session_state.current_page = "QSAR Model"
 
     # Render selected page or welcome message
     if st.session_state.current_page == "Single Molecule":
         render_single_molecule()
     elif st.session_state.current_page == "Similarity Search":
         render_similarity_search()
+    elif st.session_state.current_page == "QSAR Model":
+        render_qsar_dashboard()
     else:
         st.markdown(
             """
@@ -551,6 +1142,7 @@ def render_app() -> None:
             <ul style="list-style-type: none;">
                 <li><strong>Single Molecule:</strong> Analyze properties and bioactivity of a single compound</li>
                 <li><strong>Similarity Search:</strong> Find structurally similar molecules from a reference library</li>
+                <li><strong>QSAR Model:</strong> Predict EGFR binding affinity (pIC50) from XGBoost QSAR model trained on ChEMBL bioactivity data</li>
             </ul>
         </div>
         """,
