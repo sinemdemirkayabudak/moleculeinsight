@@ -12,6 +12,7 @@ from matplotlib.patches import Patch
 from rdkit.Chem import Draw
 
 from app.chembl import get_compound_bioactivity_from_mol
+from app.config import logger
 from app.molecule import get_molecule, get_rdkit_properties, lipinski_rules
 from app.pubchem import get_pubchem_metadata
 from app.qsar.features import compute_morgan_fingerprints, compute_rdkit_descriptors
@@ -19,6 +20,7 @@ from app.qsar.predict import QSARPredictor
 from app.similarity_search import create_structure_image, prepare_csv_export, run_similarity_search
 from app.utils import safe_execute
 from app.validators import validate_smiles
+from app.virtual_screening import run_virtual_screening_pipeline
 
 
 def display_results_table(results_df: pd.DataFrame) -> None:
@@ -1078,6 +1080,244 @@ def render_qsar_dashboard() -> None:
                     st.dataframe(scale_data, width="stretch", hide_index=True)
 
 
+def display_virtual_screening_results(results_df: pd.DataFrame) -> None:
+    """Display virtual screening results with formatting, column configuration, and download button.
+
+    Parameters:
+        results_df (pd.DataFrame): Results DataFrame with screening results
+
+    Returns:
+        None. Renders Streamlit components directly.
+    """
+    st.subheader("Screened Molecules (Ranked by Predicted Activity)")
+
+    # Format results display
+    display_df = results_df.copy()
+
+    # Format numeric columns
+    display_df["Predicted Activity (pIC50)"] = display_df["Predicted Activity (pIC50)"].round(2)
+    display_df["QED Score"] = display_df["QED Score"].round(3)
+    display_df["MW"] = display_df["MW"].round(1)
+    display_df["LogP"] = display_df["LogP"].round(2)
+
+    st.dataframe(
+        display_df,
+        column_config={
+            "Predicted Activity (pIC50)": st.column_config.NumberColumn(
+                "Predicted Activity",
+                format="%.2f",
+                help="QSAR-predicted pIC50 (higher = stronger binder)",
+            ),
+            "QED Score": st.column_config.NumberColumn(
+                "QED", format="%.3f", help="Drug-likeness (0-1, higher is better)"
+            ),
+            "Lipinski Violations": st.column_config.NumberColumn(
+                "Violations", help="Lipinski rule-of-5 violations"
+            ),
+            "MW": st.column_config.NumberColumn("Molecular Weight", format="%.1f", help="g/mol"),
+            "LogP": st.column_config.NumberColumn("LogP", format="%.2f", help="Lipophilicity"),
+        },
+        width="stretch",
+        hide_index=True,
+    )
+
+    # Download button
+    csv = display_df.to_csv(index=False)
+    st.download_button(
+        label="Download Results CSV",
+        data=csv,
+        file_name="virtual_screening_results.csv",
+        mime="text/csv",
+        width="content",
+    )
+
+
+def render_virtual_screening() -> None:
+    """Render virtual screening interface.
+
+    Allows users to upload CSV files with SMILES strings for batch processing.
+    Performs feature computation, QSAR prediction, drug-likeness filtering,
+    and returns ranked results by predicted activity.
+
+    Returns:
+        None. Renders Streamlit components directly.
+    """
+    # Clear cached results when switching pages
+    if st.session_state.get("last_page") != "Virtual Screening":
+        st.session_state.pop("screening_results_df", None)
+        st.session_state.pop("screening_summary", None)
+    st.session_state.last_page = "Virtual Screening"
+
+    # ========== SIDEBAR: INPUTS AND CONTROLS ==========
+    st.sidebar.markdown("### Upload SMILES Data")
+
+    # Load sample data button
+    if st.sidebar.button("Load Sample Data", help="Load example molecules for quick testing"):
+        st.session_state.sample_smiles_path = "app/data/sample/screening_sample.csv"
+        st.sidebar.success("Sample data loaded!")
+
+    st.sidebar.markdown("**Or upload your own CSV file:**")
+
+    # File upload in sidebar
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload CSV (columns: molecule_id, smiles)",
+        type=["csv"],
+        key="screening_file",
+    )
+
+    st.sidebar.markdown("---")
+
+    # Determine data source
+    csv_df = None
+    data_source = None
+
+    if "sample_smiles_path" in st.session_state:
+        try:
+            csv_df = pd.read_csv(st.session_state.sample_smiles_path)
+            data_source = "sample"
+        except Exception as e:
+            st.sidebar.error(f"Failed to load sample data: {e}")
+
+    elif uploaded_file:
+        try:
+            csv_df = pd.read_csv(uploaded_file)
+            data_source = "uploaded"
+        except Exception as e:
+            st.sidebar.error(f"Failed to read CSV file: {e}")
+
+    run_screening = st.sidebar.button("Run Virtual Screening", type="primary", width="stretch")
+
+    # ========== MAIN AREA: DESCRIPTION AND RESULTS ==========
+    st.subheader("Virtual Screening Pipeline (Batch QSAR Predictions)")
+
+    st.markdown("""
+    Upload a CSV file with SMILES strings to screen molecules against the EGFR QSAR model.
+    
+    **Pipeline Steps:**
+    1. Validate SMILES strings and compute molecular features
+    2. Generate QSAR predictions (pIC50 binding affinity)
+    3. Calculate drug-likeness metrics (QED score, Lipinski violations)
+    4. Filter molecules by drug-likeness criteria (≤1 Lipinski violation)
+    5. Rank results by predicted activity (descending)
+    """)
+
+    # Show file format example
+    with st.expander("View CSV Format Example"):
+        example_df = pd.DataFrame(
+            {
+                "molecule_id": ["mol1", "mol2", "mol3"],
+                "smiles": [
+                    "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+                    "CCN(CC)CCOC(=O)C1=CC=CC=C1Cl",
+                    "CC(C)NCC(O)COc1ccccc1",
+                ],
+            }
+        )
+        st.dataframe(example_df, hide_index=True, width="stretch")
+        st.caption("Required columns: molecule_id (identifier), smiles (SMILES string)")
+
+    # Status indicator
+    if data_source == "sample":
+        st.info("ℹ️ Using sample data")
+    elif data_source == "uploaded":
+        st.info("ℹ️ Using uploaded data")
+
+    # Run virtual screening
+    if run_screening and csv_df is not None:
+        try:
+            with st.spinner("Running virtual screening pipeline..."):
+                result = run_virtual_screening_pipeline(csv_df)
+
+            if not result["success"]:
+                st.error(f"❌ Screening failed: {result.get('error', 'Unknown error')}")
+            else:
+                # Display filtering summary
+                st.success("✅ Virtual screening completed!")
+
+                # Create summary metrics
+                col1, col2, col3, col4 = st.columns(4)
+
+                with col1:
+                    st.metric(
+                        "Total Uploaded",
+                        result["total_uploaded"],
+                        help="Total molecules in input CSV",
+                    )
+
+                with col2:
+                    st.metric(
+                        "Invalid SMILES",
+                        result["invalid_smiles"],
+                        help="Molecules with invalid SMILES strings",
+                    )
+
+                with col3:
+                    st.metric(
+                        "Lipinski Filtered",
+                        result["lipinski_filtered"],
+                        help="Molecules with >1 Lipinski violation",
+                    )
+
+                with col4:
+                    st.metric(
+                        "Final Screened",
+                        result["final_screened"],
+                        help="Molecules passing all filters",
+                    )
+
+                # Store results in session state
+                st.session_state.screening_results_df = result["results"]
+                st.session_state.screening_summary = {
+                    "total": result["total_uploaded"],
+                    "invalid": result["invalid_smiles"],
+                    "filtered": result["lipinski_filtered"],
+                    "final": result["final_screened"],
+                }
+
+                st.divider()
+
+                # Display results table
+                if len(result["results"]) > 0:
+                    display_virtual_screening_results(result["results"])
+
+                else:
+                    st.warning(
+                        "No molecules passed the filtering criteria. Try adjusting input data."
+                    )
+
+        except Exception as e:
+            st.error(f"Error during virtual screening: {e}")
+            logger.exception(f"Virtual screening error: {e}")
+
+    # Display cached results if available
+    elif "screening_results_df" in st.session_state and not run_screening:
+        results_df = st.session_state.screening_results_df
+        summary = st.session_state.get("screening_summary", {})
+
+        st.success("✅ Virtual screening completed!")
+
+        # Display summary metrics
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Total Uploaded", summary.get("total", 0))
+        with col2:
+            st.metric("Invalid SMILES", summary.get("invalid", 0))
+        with col3:
+            st.metric("Lipinski Filtered", summary.get("filtered", 0))
+        with col4:
+            st.metric("Final Screened", summary.get("final", 0))
+
+        st.divider()
+
+        # Display results table
+        if len(results_df) > 0:
+            display_virtual_screening_results(results_df)
+
+    elif run_screening and csv_df is None:
+        st.warning("⚠️ Please load sample data or upload a CSV file to proceed")
+
+
 def render_app() -> None:
     """Main application renderer with sidebar navigation.
 
@@ -1106,11 +1346,15 @@ def render_app() -> None:
     # Sidebar navigation with improved styling
     st.sidebar.markdown("### Analysis Mode")
 
-    col1, col2, col3 = st.sidebar.columns(3)
+    col1, col2 = st.sidebar.columns(2)
 
     single_mol = col1.button("Single\nMolecule", width="stretch", key="nav_single")
     similarity = col2.button("Similarity\nSearch", width="stretch", key="nav_similarity")
+
+    col3, col4 = st.sidebar.columns(2)
+
     qsar = col3.button("QSAR\nModel", width="stretch", key="nav_qsar")
+    screening = col4.button("Virtual\nScreening", width="stretch", key="nav_screening")
 
     st.sidebar.divider()
 
@@ -1125,6 +1369,8 @@ def render_app() -> None:
         st.session_state.current_page = "Similarity Search"
     if qsar:
         st.session_state.current_page = "QSAR Model"
+    if screening:
+        st.session_state.current_page = "Virtual Screening"
 
     # Render selected page or welcome message
     if st.session_state.current_page == "Single Molecule":
@@ -1133,6 +1379,8 @@ def render_app() -> None:
         render_similarity_search()
     elif st.session_state.current_page == "QSAR Model":
         render_qsar_dashboard()
+    elif st.session_state.current_page == "Virtual Screening":
+        render_virtual_screening()
     else:
         st.markdown(
             """
@@ -1143,6 +1391,7 @@ def render_app() -> None:
                 <li><strong>Single Molecule:</strong> Analyze properties and bioactivity of a single compound</li>
                 <li><strong>Similarity Search:</strong> Find structurally similar molecules from a reference library</li>
                 <li><strong>QSAR Model:</strong> Predict EGFR binding affinity (pIC50) from XGBoost QSAR model trained on ChEMBL bioactivity data</li>
+                <li><strong>Virtual Screening:</strong> Batch screen molecules through QSAR pipeline with drug-likeness filtering</li>
             </ul>
         </div>
         """,

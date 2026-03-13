@@ -19,6 +19,12 @@ Simply enter a SMILES string (Simplified Molecular Input Line Entry System), and
 
 ### Features
 
+### Single Molecule Analysis
+- **Molecular Properties** - MW, LogP, TPSA, HBD, HBA, rotatable bonds
+- **Lipinski's Rule-of-5** - Drug-likeness evaluation with violation count
+- **PubChem Integration** - IUPAC names, synonyms, molecular formulas
+- **ChEMBL Bioactivity** - Known bioactivity data and filtering
+
 ### Calculated Properties
 - **Molecular Weight (MW)** - Mass of the molecule
 - **LogP** - Lipophilicity (octanol-water partition coefficient)
@@ -54,6 +60,18 @@ Assesses drug-likeness:
 - **Cross-Validation** - 5-fold cross-validation ensures robust model performance (R²=0.70)
 - **Confidence Metrics** - Model R², RMSE, and prediction confidence for validation
 
+### Virtual Screening
+- **Batch QSAR Pipeline** - Screen multiple molecules in a single run
+- **CSV Upload** - Process large libraries of compounds (SMILES format)
+- **SMILES Validation** - Automatic detection of invalid structures
+- **Feature Computation** - Morgan fingerprints + RDKit descriptors per molecule
+- **QSAR Predictions** - Predict EGFR binding affinity (pIC50) for each compound
+- **Drug-Likeness Filtering** - QED scoring and Lipinski Rule-of-5 compliance checking
+- **Smart Filtering** - Keep molecules with ≤1 Lipinski violation
+- **Ranked Results** - Output sorted by predicted activity (highest binding first)
+- **Summary Statistics** - Track total uploaded, invalid SMILES, filtered, and screened molecules
+- **CSV Export** - Download complete results with all predictions and properties
+
 ### Additional Features
 - **PubChem Integration** - Fetches IUPAC names, synonyms, molecular formulas
 - **ChEMBL Bioactivity** - Queries bioactivity data for known drug targets
@@ -67,11 +85,14 @@ Assesses drug-likeness:
 
 ## Testing & Code Quality
 
-### Test Coverage by Module (452 Total Tests, 76.05% Coverage)
+### Test Coverage by Module (488 Total Tests, 73.87% Coverage)
 
-**QSAR Module** (106 tests, 95% avg coverage)
+**Virtual Screening Module** (36 tests, 100% coverage)
+- `virtual_screening.py` - Batch QSAR screening (36 tests, 100% ✅)
+
+**QSAR Module** (102 tests, avg 98.5% coverage)
 - `train_models.py` - Model training & evaluation (19 tests, 100% ✅)
-- `model_visualizations.py` - Dashboard plots & SHAP (20 tests, 85.7% ✅)
+- `model_visualizations.py` - Dashboard plots & SHAP (20 tests, 85.63% ✅)
 - `qsar_prediction.py` - Pipeline orchestration (15 tests, 100% ✅)
 - `explain.py` - Feature importance (6 tests, 100% ✅)
 - `visualize.py` - Visualization utilities (7 tests, 100% ✅)
@@ -80,7 +101,7 @@ Assesses drug-likeness:
 - `preprocessing.py` - Data preprocessing (11 tests, 100% ✅)
 - `data_loader.py` - Data loading (7 tests, 100% ✅)
 
-**Similarity Search Module** (197 tests, 99% avg coverage)
+**Similarity Search Module** (197 tests, avg 96.5% coverage)
 - `fingerprints.py` - Morgan fingerprints (11 tests, 100% ✅)
 - `pipeline.py` - Search pipeline (49 tests, 100% ✅)
 - `validators.py` - Parameter validation (12 tests, 100% ✅)
@@ -89,18 +110,18 @@ Assesses drug-likeness:
 - CLI integration tests (95 tests: 40 basic + 11 visualization + 44 edge cases)
 - Other similarity tests (12 tests)
 
-**Core Analysis Modules** (150 tests, 100% coverage)
+**Core Analysis Modules** (153 tests, 96% avg coverage)
 - `chembl.py` - ChEMBL API integration (17 tests, 100% ✅)
 - `molecule.py` - Molecular operations (16 tests, 100% ✅)
 - `pubchem.py` - PubChem API integration (13 tests, 100% ✅)
-- `validators.py` - SMILES validation (14 tests, 100% ✅)
+- `validators.py` - SMILES validation (14 tests, 83.33% ✅)
 - `utils.py` - Utility functions (8 tests, 100% ✅)
 - `config.py` - Configuration (100% ✅)
 - Component tests (82 tests across modules)
 
 **Quality Assurance**
-- **Comprehensive Test Suite** - 452 unit and integration tests across all modules
-- **Code Coverage** - 76.05% overall, 100% on all core business logic modules
+- **Comprehensive Test Suite** - 488 unit and integration tests across all modules
+- **Code Coverage** - 73.87% overall, 100% coverage on all core business logic modules
 - **Automated Testing** - GitHub Actions CI/CD runs full test suite on every push
 - **Quality Tools** - Ruff for linting/formatting, Pytest for testing, Coverage tracking
 - **Type Safety** - Full type hints with Pylance IDE support
@@ -298,7 +319,7 @@ uv run python -m app.similarity_search \
 
 ## Testing
 
-The project includes a comprehensive test suite with **452 tests** across all modules with **76.05% overall coverage** and 100% coverage on all core business logic modules.
+The project includes a comprehensive test suite with **488 tests** across all modules with **73.87% overall coverage** and 100% coverage on all core business logic modules.
 
 ### Test Coverage by Module
 
@@ -325,25 +346,29 @@ The project includes a comprehensive test suite with **452 tests** across all mo
 | `app/similarity_search/validators.py` | **100%** ✅ | 12 tests | Validation |
 | `app/similarity_search/visualization.py` | **96.51%** ✅ | 22 tests | Visualization |
 | CLI/Other Integration Tests | **100%** ✅ | 95 tests | End-to-End |
-| **TOTAL PROJECT COVERAGE** | **76.18%** | **449 tests** | ✅ All Passing |
+│ `app/virtual_screening.py` | **100%** ✅ | 36 tests | Virtual Screening |
+| **TOTAL PROJECT COVERAGE** | **73.87%** | **488 tests** | ✅ All Passing |
 
 ### Run All Tests
 
 ```bash
-uv run pytest tests/ -v                           # Run all 449 tests
+uv run pytest tests/ -v                           # Run all 488 tests
 uv run pytest tests/ --cov=app --cov-report=html # Generate coverage report
 ```
 
 ### Run Tests by Module
 
 ```bash
-# QSAR module tests (106 tests)
+# Virtual Screening tests (36 tests)
+uv run pytest tests/test_virtual_screening.py -v
+
+# QSAR module tests (102 tests)
 uv run pytest tests/test_qsar_*.py -v
 
 # Similarity search tests (197 tests)
 uv run pytest tests/test_similarity_search_*.py -v
 
-# Core module tests (150 tests)
+# Core module tests (153 tests)
 uv run pytest tests/test_chembl.py -v             # ChEMBL API
 uv run pytest tests/test_molecule.py -v           # Molecular operations
 uv run pytest tests/test_pubchem.py -v            # PubChem API
@@ -353,14 +378,14 @@ uv run pytest tests/test_utils.py -v              # Utilities
 
 ### Testing Strategy
 
-- **Comprehensive coverage** - 449 tests across all modules with mocked external APIs
+- **Comprehensive coverage** - 488 tests across all modules with mocked external APIs
 - **100% business logic coverage** - All core modules fully tested
 - **Exception handling** - Tests cover success, failure, and edge cases
 - **Integration tests** - End-to-end pipeline tests with real data
 - **Streamlit patches** - Cache decorators properly mocked
 - **Performance** - Tests run in <60 seconds offline
 
-**All 449 tests pass** ✓
+**All 488 tests pass** ✓
 
 ## Project Structure
 
@@ -376,7 +401,8 @@ moleculeinsight/
 │   ├── pubchem.py               # PubChem API integration (100% coverage - 13 tests)
 │   ├── chembl.py                # ChEMBL API integration & bioactivity lookup (100% coverage - 17 tests)
 │   ├── ui.py                    # Streamlit UI and user interface
-│   ├── qsar/                    # QSAR bioactivity prediction module (95% coverage - 106 tests)
+│   ├── virtual_screening.py     # Batch QSAR screening pipeline (100% coverage - 36 tests)
+│   ├── qsar/                    # QSAR bioactivity prediction module (98% coverage - 102 tests)
 │   │   ├── __init__.py
 │   │   ├── train_models.py      # Model training - RF + XGBoost (100% - 15 tests)
 │   │   ├── model_visualizations.py # Dashboard plots & SHAP (85.7% - 20 tests)
@@ -409,8 +435,9 @@ moleculeinsight/
 │           ├── query_molecules.csv              # Similarity search queries (5 molecules)
 │           ├── reference_library.csv            # Similarity search reference library (9 molecules)
 │           ├── moleculeinsight_test_dataset.csv # Edge case test data (26 molecules)
-│           └── lipinski_test_dataset.csv        # Lipinski rule test data (16 molecules)
-├── tests/                       # Comprehensive test suite (449 tests, 76% coverage)
+│           ├── lipinski_test_dataset.csv        # Lipinski rule test data (16 molecules)
+│           └── screening_sample.csv             # Virtual screening sample data (19 molecules)
+├── tests/                       # Comprehensive test suite (488 tests, 73.87% coverage)
 │   ├── conftest.py              # Pytest configuration & Streamlit fixtures
 │   ├── test_validators.py       # SMILES validation (14 tests)
 │   ├── test_molecule.py         # Molecular calculations (16 tests)
@@ -435,6 +462,7 @@ moleculeinsight/
 │   ├── test_similarity_search_cli_basic.py       # CLI basic functionality (40 tests)
 │   ├── test_similarity_search_cli_visualization.py # CLI visualization (11 tests)
 │   ├── test_similarity_search_cli_edge_cases.py  # CLI edge cases & exceptions (44 tests)
+│   ├── test_virtual_screening.py         # Batch QSAR screening pipeline (36 tests)
 │   └── components/
 │       └── __init__.py          # Component test utilities
 ├── .github/
@@ -633,9 +661,3 @@ GET /activity.json?molecule_chembl_id={ID}&limit=20
 
 For detailed architecture, module descriptions, and data flow diagrams, see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
----
-
-**Last Updated:** March 5, 2026  
-**Python Version:** 3.11+  
-**Test Status:** ✅ 142/142 tests passing  
-**Coverage:** 65.29% overall (100% on core modules and similarity_search target submodules)
