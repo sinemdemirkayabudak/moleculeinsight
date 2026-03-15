@@ -17,6 +17,12 @@ from app.molecule import get_molecule, get_rdkit_properties, lipinski_rules
 from app.pubchem import get_pubchem_metadata
 from app.qsar.features import compute_morgan_fingerprints, compute_rdkit_descriptors
 from app.qsar.predict import QSARPredictor
+from app.scaffold_sar import (
+    add_scaffolds_to_dataframe,
+    detect_activity_cliffs,
+    get_ic50_summary_stats,
+    summarize_scaffolds,
+)
 from app.similarity_search import create_structure_image, prepare_csv_export, run_similarity_search
 from app.utils import safe_execute
 from app.validators import validate_smiles
@@ -1132,6 +1138,279 @@ def display_virtual_screening_results(results_df: pd.DataFrame) -> None:
     )
 
 
+def render_scaffold_sar() -> None:
+    """Render Scaffold & SAR Explorer interface.
+
+    Returns:
+        None. Renders Streamlit components directly.
+    """
+    st.subheader("Scaffold & SAR Explorer")
+
+    st.markdown(
+        """
+    Analyze chemical scaffolds, identify structure-activity relationships (SAR),
+    and detect activity cliffs (similar molecules with large potency differences).
+    """
+    )
+
+    # Sidebar: Data loading
+    st.sidebar.markdown("### Load Dataset")
+
+    if st.sidebar.button("Load Sample Dataset", type="primary", width="stretch"):
+        with st.spinner("Loading sample IC50 data..."):
+            from app.scaffold_sar import load_sample_ic50_data
+
+            df = load_sample_ic50_data()
+
+        if df is None or df.empty:
+            st.error("Failed to load sample dataset")
+            return
+
+        if "molecule_id" not in df.columns:
+            df["molecule_id"] = [f"MOL_{i:04d}" for i in range(len(df))]
+
+        st.session_state.scaffold_data = df
+        st.sidebar.success(f"✅ Loaded {len(df)} molecules")
+
+    # File uploader for user's dataset
+    st.sidebar.markdown("### Or Upload Your CSV")
+
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload CSV file",
+        type="csv",
+        key="scaffold_csv_upload",
+        help="CSV must contain 'smiles' column. 'standard_value' (IC50 in nM) is optional—will be fetched if missing.",
+    )
+
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+
+            if "smiles" not in df.columns:
+                st.error("CSV must contain 'smiles' column")
+                return
+
+            # If standard_value is missing, attempt to fetch from sample dataset
+            if "standard_value" not in df.columns:
+                st.warning(
+                    "⚠️ 'standard_value' column not found. Attempting to fetch IC50 values..."
+                )
+                from app.scaffold_sar import fetch_missing_ic50_values
+
+                df = fetch_missing_ic50_values(df)
+
+                if "standard_value" not in df.columns or df["standard_value"].isna().all():
+                    st.error(
+                        "Could not retrieve IC50 values. Please provide 'standard_value' column in your CSV."
+                    )
+                    return
+                elif df["standard_value"].isna().any():
+                    st.warning(
+                        f"⚠️ Could only match IC50 values for {df['standard_value'].notna().sum()}/{len(df)} molecules. "
+                        f"Consider providing 'standard_value' for all molecules."
+                    )
+
+            if "molecule_id" not in df.columns:
+                df["molecule_id"] = [f"MOL_{i:04d}" for i in range(len(df))]
+
+            st.session_state.scaffold_data = df
+            st.sidebar.success(f"✅ Loaded {len(df)} molecules")
+        except Exception as e:
+            st.error(f"Error reading CSV: {str(e)}")
+            return
+
+    # Get data from session state if available
+    df = st.session_state.get("scaffold_data", None)
+
+    # Display CSV format guide on main page
+    with st.expander("CSV Format Guide", expanded=False):
+        st.markdown(
+            """
+            **Required columns:**
+            - `smiles` - SMILES string representation of the molecule
+            
+            **Optional columns:**
+            - `standard_value` - IC50 binding affinity in nM (auto-fetched from sample data if missing)
+            - `molecule_id` - Unique identifier (auto-generated if missing)
+            
+            **Example:**
+            """
+        )
+
+        # Create example dataframe
+        example_data = {
+            "molecule_id": ["MOL_001", "MOL_002", "MOL_003"],
+            "smiles": [
+                "CC(=O)OC1=CC=CC=C1C(=O)O",
+                "CC(=O)OC1=CC=CC=C1C(=O)N",
+                "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O",
+            ],
+            "standard_value": [50.0, 500.0, 10.0],
+        }
+        example_df = pd.DataFrame(example_data)
+        st.dataframe(example_df, hide_index=True, width="stretch")
+
+    # Display analysis only if data is loaded
+    if df is None or df.empty:
+        st.info("Upload a CSV file or load the sample dataset from the sidebar to begin analysis.")
+        return
+
+    try:
+        # Display IC50 summary statistics
+        st.subheader("Data Summary")
+        stats = get_ic50_summary_stats(df)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Molecules", stats["total_molecules"])
+        with col2:
+            st.metric("With IC50 Data", stats["with_ic50"])
+        with col3:
+            st.metric("Coverage (%)", f"{stats['coverage_percent']:.1f}%")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Activity Range", stats["activity_range"])
+        with col2:
+            st.metric("Median IC50", f"{stats['median_ic50']:.1f} nM")
+
+        # Add scaffolds to dataframe
+        with st.spinner("Extracting scaffolds..."):
+            df_with_scaffolds = add_scaffolds_to_dataframe(df)
+
+        if df_with_scaffolds.empty:
+            st.error("No valid scaffolds found")
+            return
+
+        st.success(f"Extracted scaffolds for {len(df_with_scaffolds)} molecules")
+
+        # Display scaffold groups
+        st.subheader("Scaffold Groups")
+        scaffold_summary = summarize_scaffolds(df_with_scaffolds)
+
+        if scaffold_summary.empty:
+            st.warning("No scaffold groups found")
+        else:
+            st.metric("Unique Scaffolds", len(scaffold_summary))
+
+            # Display table with formatting
+            display_df = scaffold_summary.copy()
+            display_df["avg_activity"] = display_df["avg_activity"].round(2)
+            display_df["min_activity"] = display_df["min_activity"].round(2)
+            display_df["max_activity"] = display_df["max_activity"].round(2)
+
+            st.dataframe(
+                display_df,
+                column_config={
+                    "scaffold": st.column_config.TextColumn("Scaffold SMILES", width="large"),
+                    "molecule_count": st.column_config.NumberColumn("Molecules"),
+                    "avg_activity": st.column_config.NumberColumn("Avg IC50 (nM)"),
+                    "min_activity": st.column_config.NumberColumn("Min IC50 (nM)"),
+                    "max_activity": st.column_config.NumberColumn("Max IC50 (nM)"),
+                },
+                width="stretch",
+                hide_index=True,
+            )
+
+            # Download scaffold summary
+            csv_scaffold = scaffold_summary.to_csv(index=False)
+            st.download_button(
+                label="Download Scaffold Summary",
+                data=csv_scaffold,
+                file_name="scaffold_summary.csv",
+                mime="text/csv",
+                width="content",
+            )
+
+        # Activity cliff detection
+        st.subheader("Activity Cliff Detection")
+        st.markdown(
+            "Activity cliffs are pairs of similar molecules with large differences in potency. "
+            "They provide insights into which structural features affect binding affinity."
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            sim_threshold = st.slider(
+                "Similarity Threshold",
+                0.50,
+                1.0,
+                0.85,
+                step=0.01,
+                help="Minimum Tanimoto similarity",
+            )
+        with col2:
+            ratio_threshold = st.slider(
+                "Activity Ratio Threshold",
+                10.0,
+                500.0,
+                100.0,
+                step=10.0,
+                help="Minimum IC50 ratio (fold change)",
+            )
+
+        if st.button("Detect Activity Cliffs", type="primary", width="stretch"):
+            with st.spinner("Detecting activity cliffs..."):
+                cliffs_df = detect_activity_cliffs(
+                    df_with_scaffolds,
+                    similarity_threshold=sim_threshold,
+                    activity_ratio_threshold=ratio_threshold,
+                )
+
+            if len(cliffs_df) > 0:
+                st.success(f"Found {len(cliffs_df)} activity cliffs")
+
+                # Display cliffs table
+                display_cliffs = cliffs_df[
+                    [
+                        "mol1",
+                        "mol2",
+                        "similarity",
+                        "activity_ratio",
+                        "ic50_molecule_1",
+                        "ic50_molecule_2",
+                    ]
+                ].copy()
+
+                st.dataframe(
+                    display_cliffs,
+                    column_config={
+                        "mol1": st.column_config.TextColumn("Molecule 1"),
+                        "mol2": st.column_config.TextColumn("Molecule 2"),
+                        "similarity": st.column_config.NumberColumn("Similarity", format="%.3f"),
+                        "activity_ratio": st.column_config.NumberColumn(
+                            "Activity Ratio", format="%.1f x"
+                        ),
+                        "ic50_molecule_1": st.column_config.NumberColumn(
+                            "IC50 Molecule 1 (nM)", format="%.2f"
+                        ),
+                        "ic50_molecule_2": st.column_config.NumberColumn(
+                            "IC50 Molecule 2 (nM)", format="%.2f"
+                        ),
+                    },
+                    width="stretch",
+                    hide_index=True,
+                )
+
+                # Download cliffs
+                csv_cliffs = cliffs_df.to_csv(index=False)
+                st.download_button(
+                    label="Download Activity Cliffs",
+                    data=csv_cliffs,
+                    file_name="activity_cliffs.csv",
+                    mime="text/csv",
+                    width="content",
+                )
+            else:
+                st.info(
+                    "No activity cliffs found with current thresholds. Try lower similarity threshold."
+                )
+
+    except Exception as e:
+        logger.exception(f"Error in Scaffold & SAR Explorer: {e}")
+        st.error(f"An error occurred: {str(e)}")
+
+
 def render_virtual_screening() -> None:
     """Render virtual screening interface.
 
@@ -1346,16 +1625,16 @@ def render_app() -> None:
     # Sidebar navigation with improved styling
     st.sidebar.markdown("### Analysis Mode")
 
-    col1, col2 = st.sidebar.columns(2)
+    col1, col2, col3 = st.sidebar.columns(3)
 
     single_mol = col1.button("Single\nMolecule", width="stretch", key="nav_single")
     similarity = col2.button("Similarity\nSearch", width="stretch", key="nav_similarity")
-
-    col3, col4 = st.sidebar.columns(2)
-
     qsar = col3.button("QSAR\nModel", width="stretch", key="nav_qsar")
-    screening = col4.button("Virtual\nScreening", width="stretch", key="nav_screening")
 
+    col4, col5 = st.sidebar.columns(2)
+
+    screening = col4.button("Virtual\nScreening", width="stretch", key="nav_screening")
+    scaffold = col5.button("Scaffold\nSAR", width="stretch", key="nav_scaffold")
     st.sidebar.divider()
 
     # Initialize page state if not exists
@@ -1367,6 +1646,8 @@ def render_app() -> None:
         st.session_state.current_page = "Single Molecule"
     if similarity:
         st.session_state.current_page = "Similarity Search"
+    if scaffold:
+        st.session_state.current_page = "Scaffold & SAR Explorer"
     if qsar:
         st.session_state.current_page = "QSAR Model"
     if screening:
@@ -1377,6 +1658,8 @@ def render_app() -> None:
         render_single_molecule()
     elif st.session_state.current_page == "Similarity Search":
         render_similarity_search()
+    elif st.session_state.current_page == "Scaffold & SAR Explorer":
+        render_scaffold_sar()
     elif st.session_state.current_page == "QSAR Model":
         render_qsar_dashboard()
     elif st.session_state.current_page == "Virtual Screening":
@@ -1390,6 +1673,7 @@ def render_app() -> None:
             <ul style="list-style-type: none;">
                 <li><strong>Single Molecule:</strong> Analyze properties and bioactivity of a single compound</li>
                 <li><strong>Similarity Search:</strong> Find structurally similar molecules from a reference library</li>
+                <li><strong>Scaffold & SAR Explorer:</strong> Extract scaffolds, identify activity cliffs, and analyze structure-activity relationships</li>
                 <li><strong>QSAR Model:</strong> Predict EGFR binding affinity (pIC50) from XGBoost QSAR model trained on ChEMBL bioactivity data</li>
                 <li><strong>Virtual Screening:</strong> Batch screen molecules through QSAR pipeline with drug-likeness filtering</li>
             </ul>
