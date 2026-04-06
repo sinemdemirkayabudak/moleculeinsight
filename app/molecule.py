@@ -23,6 +23,8 @@ def get_molecule(smiles: str) -> Mol | None:
 
 
 def get_rdkit_properties(mol: Mol) -> dict[str, float] | None:
+    if mol is None:
+        return None
     try:
         properties = {
             "mw": Descriptors.MolWt(mol),  # molecular weight

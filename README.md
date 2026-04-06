@@ -7,19 +7,18 @@ A Streamlit web application for analyzing molecular properties, drug-likeness, a
 
 ## Overview
 
-**MoleculeInsight** is an interactive tool that helps chemists and researchers quickly analyze molecules by:
-- **Visualizing** molecular structures (2D rendering)
-- **Calculating** key molecular properties (MW, LogP, TPSA, H-bonds, etc.)
-- **Evaluating** Lipinski's Rule-of-5 compliance for drug-likeness
-- **Retrieving** metadata from PubChem (IUPAC name, synonyms, CID)
-- **Querying** ChEMBL database for known bioactivity data
-- **Filtering** bioactivity results by activity type, units, and confidence
+**MoleculeInsight** is a comprehensive molecular analysis platform with 5 integrated tools:
+- **Single Molecule Analysis** - Visualize structures, calculate properties, evaluate drug-likeness, retrieve PubChem/ChEMBL bioactivity
+- **Similarity Search** - Find structurally similar compounds using Morgan fingerprints and Tanimoto similarity
+- **QSAR Prediction** - Predict EGFR kinase binding affinity using trained XGBoost QSAR ML model with SHAP explainability
+- **Virtual Screening** -  Batch screen molecules through QSAR pipeline, filter by drug-likeness, rank by predicted activity
+- **Scaffold & SAR Explorer** - Extract Murcko scaffolds, detect activity cliffs, analyze structure-activity relationships
 
-Simply enter a SMILES string (Simplified Molecular Input Line Entry System), and get instant comprehensive analysis of the molecule.
+Enter SMILES strings or upload CSV files for instant multi-faceted molecular analysis.
 
 ### Core Features
 
-**Molecular Analysis**
+**Single Molecule Analysis**
 - **Molecular Properties** - MW, LogP, TPSA, HBD, HBA, rotatable bonds, aromaticity
 - **Lipinski's Rule-of-5** - Drug-likeness evaluation with violation count
 - **PubChem Integration** - IUPAC names, synonyms, molecular formulas
@@ -43,7 +42,7 @@ Simply enter a SMILES string (Simplified Molecular Input Line Entry System), and
 - **Drug-Likeness Filter** - QED and Lipinski Rule-of-5 compliance
 - **Ranked Results** - Output sorted by predicted activity
 
-**Scaffold & SAR Analysis** ✨ NEW
+**Scaffold & SAR Explorer**
 - **Murcko Scaffolds** - Extract scaffold framework from molecules
 - **Activity Cliffs** - Detect similar structures with large activity differences
 - **Fingerprint Similarity** - Compute Tanimoto similarity for structure comparison
@@ -84,21 +83,22 @@ CC(=O)OC1=CC=CC=C1C(=O)O,Aspirin
 
 ## Testing & Coverage
 
-**Current Status:** 621 tests, **72.40% overall coverage**
+**Current Status:** 708 tests, **69.45% overall coverage**
 
 | Module | Coverage | Tests | Status |
 |--------|----------|-------|--------|
-| **Scaffold & SAR** | **99.50%** ✅ | Core: 150 lines, 1 uncovered branch |
-| **Core Analysis** | **100%** ✅ | molecule, chembl, pubchem, validators, utils |
-| **QSAR Prediction** | **98.3%** ✅ | 9 modules, train.py 97.59%, model_viz 85.63% |
-| **Similarity Search** | **98.7%** ✅ | 5 modules, visualization 96.51% |
+| **Scaffold & SAR Explorer** | **99.49%** ✅ | Core: 148 lines |
+| **Single Molecule Analysis** | **100%** ✅ | molecule, pubchem, validators |
+| **QSAR Prediction** | **99.51%** ✅ | 9 modules + smiles_processor (100%) |
+| **Similarity Search** | **100%** ✅ | 5 modules, visualization 100% |
 | **Virtual Screening** | **100%** ✅ | 104 lines, full coverage |
 
 **Run tests:**
 ```bash
-uv run pytest tests/ -v                           # All 621 tests
+uv run pytest tests/ -v                           # All 708 tests
 uv run pytest tests/ --cov=app --cov-report=html # Generate HTML report
 uv run pytest tests/test_scaffold_sar.py -v      # Scaffold SAR tests
+uv run pytest tests/test_qsar_*.py -v            # QSAR model tests
 ```
 
 ## Project Structure
@@ -107,19 +107,23 @@ uv run pytest tests/test_scaffold_sar.py -v      # Scaffold SAR tests
 moleculeinsight/
 ├── main.py                      # Streamlit app entry point
 ├── app/
-│   ├── config.py, validators.py, utils.py, molecule.py, pubchem.py, chembl.py, ui.py
-│   ├── virtual_screening.py     # Batch QSAR pipeline (36 tests, 100%)
-│   ├── scaffold_sar.py          # Scaffold extraction & activity cliffs (147 tests, 99.5%)
-│   ├── qsar/                    # EGFR bioactivity prediction (102 tests, 98%)
+│   ├── config.py, validators.py, utils.py, molecule.py, pubchem.py, chembl.py (100%), ui.py
+│   ├── virtual_screening.py     # Batch QSAR pipeline (100% coverage)
+│   ├── scaffold_sar.py          # Scaffold extraction & activity cliffs (99.49% coverage)
+│   ├── qsar/                    # EGFR bioactivity prediction (100% coverage)
+│   │   ├── smiles_processor.py  # SMILES utilities (100% coverage)
+│   │   ├── model_visualizations.py # Performance plots (98.49% coverage)
 │   │   └── saved_models/        # Trained RF + XGBoost models
-│   ├── similarity_search/       # Morgan fingerprints & Tanimoto similarity (197 tests, 97%)
+│   ├── similarity_search/       # Morgan fingerprints & Tanimoto similarity (100% coverage)
 │   ├── components/              # UI card components
 │   └── data/sample/             # Sample data for demos
-├── tests/                       # 635 tests, 72.4% coverage
-│   ├── test_scaffold_sar.py     # 147 tests, 99.5% coverage (NEW)
-│   ├── test_qsar_*.py           # QSAR tests (102 tests)
-│   ├── test_similarity_*.py     # Similarity search tests (197 tests)
-│   └── test_*.py                # Core module tests (82 tests)
+├── tests/                       # 708 tests, 69.45% coverage
+│   ├── test_scaffold_sar.py     # Tests with 99.49% coverage
+│   ├── test_qsar_model_visualizations.py # Model visualization tests
+│   ├── test_qsar_smiles_processor.py # SMILES processor tests (100% coverage)
+│   ├── test_qsar_*.py           # QSAR tests (100% coverage)
+│   ├── test_similarity_*.py     # Similarity search tests (100% coverage)
+│   └── test_*.py                # Core module tests (100% coverage)
 ├── docs/
 │   ├── ARCHITECTURE.md          # Detailed architecture & algorithms
 │   └── ANNOTATIONS.md           # Feature annotations (EGFR model)

@@ -8,7 +8,8 @@ import warnings
 from functools import lru_cache
 from io import BytesIO
 
-import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 from rdkit.Chem import Draw
 
@@ -33,73 +34,46 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def visualize_distribution(top_hits, query_df, show=True):
-    """Pre-generate and cache individual ranking plots for each query.
+def visualize_distribution(top_hits: pd.DataFrame, query_df: pd.DataFrame, show=True):
+    """
+    Render individual ranking plots for each query using Streamlit bar_chart.
 
     Parameters:
         top_hits (pd.DataFrame): DataFrame with top N hits per query, sorted by similarity
         query_df (pd.DataFrame): DataFrame with query molecules
-        show (bool): Whether to display plots (default: True, typically False in Streamlit)
+        show (bool): Whether to display plots (default: True)
 
     Returns:
-        dict: Dictionary mapping query_name -> matplotlib figure object for each query.
-              Returns empty dict if no plots can be generated.
+        dict: Dictionary mapping query_name -> DataFrame used for plotting
     """
+    query_charts = {}
+
     try:
-        logger.info("Generating ranking plots for all queries...")
-
-        query_plots = {}
-
-        # Generate a single plot for each query (sorted ascending)
+        st.write("Generating ranking charts for all queries...")
         for query_name in sorted(query_df["query_name"]):
-            # Get top hits for this query, sorted by similarity ascending
             query_hits = top_hits[top_hits["query_name"] == query_name].sort_values(
                 "similarity", ascending=True
             )
 
-            if len(query_hits) == 0:
-                logger.warning(f"No hits found for query: {query_name}")
+            if query_hits.empty:
+                st.warning(f"No hits found for query: {query_name}")
                 continue
 
-            # Create figure for this query
-            fig, ax = plt.subplots(figsize=(14, max(6, len(query_hits) * 0.5)))
-
-            # Create horizontal bar chart
-            ax.barh(
-                range(len(query_hits)),
-                query_hits["similarity"],
-                color=plt.cm.RdYlGn(query_hits["similarity"]),  # Red (high) to Green (low)
-                edgecolor="black",
-                linewidth=0.5,
+            # Prepare DataFrame for Streamlit bar_chart
+            plot_df = pd.DataFrame(
+                {"Similarity": query_hits["similarity"].values}, index=query_hits["ref_name"]
             )
 
-            # Add similarity score labels on bars
-            for i, similarity in enumerate(query_hits["similarity"]):
-                ax.text(similarity + 0.02, i, f"{similarity:.3f}", va="center", fontsize=12)
+            query_charts[query_name] = plot_df
 
-            # Set y-axis labels to compound names
-            ax.set_yticks(range(len(query_hits)))
-            ax.set_yticklabels(query_hits["ref_name"], fontsize=12)
+            if show:
+                st.subheader(f"Top Similar Compounds for Query: {query_name}")
+                st.bar_chart(plot_df)
 
-            ax.set_xlabel("Tanimoto Similarity", fontsize=13)
-            ax.set_title(
-                f"Top Similar Compounds for Query: {query_name}", fontweight="bold", fontsize=14
-            )
-            ax.set_xlim(0, 1.15)  # Leave room for score labels
-            ax.tick_params(axis="both", which="major", labelsize=12)
-            ax.grid(axis="x", alpha=0.3)
+        return query_charts
 
-            fig.tight_layout()
-
-            # Cache the figure
-            query_plots[query_name] = fig
-            logger.debug(f"Generated plot for query: {query_name}")
-
-        logger.info(f"Successfully generated {len(query_plots)} plots")
-        return query_plots
     except Exception as e:
-        logger.error(f"Error generating plots: {e}")
-        logger.warning("Continuing without plot visualization")
+        st.error(f"Error generating charts: {e}")
         return {}
 
 

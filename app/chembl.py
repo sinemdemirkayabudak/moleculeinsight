@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from rdkit.Chem import MolToSmiles
 
 from app.config import CHEMBL_BASE_URL, logger
 from app.pubchem import get_pubchem_metadata
@@ -63,14 +64,29 @@ def get_chembl_target_id(target_name: str) -> str | None:
         return None
 
 
-@st.cache_data(ttl=86400)
-def get_chembl_molecule(inchikey: str) -> dict:
+def get_chembl_molecule(inchikey: str, smiles: str | None = None) -> dict:
     """
-    Resolve ChEMBL molecule entry using InChIKey.
-    Returns molecule metadata including ChEMBL ID.
-    Cached for 1 hour to avoid redundant API calls.
-    """
+    Resolve ChEMBL molecule entry using InChIKey with SMILES fallback.
 
+    Attempts to find molecule using InChIKey first, then falls back to SMILES if needed.
+    This provides robustness against API issues or missing InChI structures.
+
+    Returns molecule metadata including ChEMBL ID.
+
+    NOTE: Not cached to ensure retries can work properly on transient failures.
+
+    Parameters
+    ----------
+    inchikey : str
+        Standard InChI key to lookup
+    smiles : str, optional
+        SMILES string as fallback lookup method
+
+    Returns
+    -------
+    dict
+        Dictionary with success status and ChEMBL metadata or error info
+    """
     try:
         logger.info(f"Searching ChEMBL molecule for InChIKey: {inchikey}")
         url = f"{CHEMBL_BASE_URL}/molecule.json"
@@ -78,30 +94,48 @@ def get_chembl_molecule(inchikey: str) -> dict:
 
         data = get_response_json(url, params)
 
-        if not data:
-            logger.warning("No response from ChEMBL molecule endpoint")
-            return {"success": False, "message": "No ChEMBL match found"}
+        if data:
+            molecules = data.get("molecules", [])
+            if molecules:
+                # Take the highest-confidence match returned by ChEMBL
+                molecule = molecules[0]
+                chembl_id = molecule.get("molecule_chembl_id")
+                logger.info(f"ChEMBL molecule found via InChIKey: {chembl_id}")
 
-        molecules = data.get("molecules", [])
+                return {
+                    "success": True,
+                    "chembl_id": chembl_id,
+                    "pref_name": molecule.get("pref_name"),
+                    "molecule_type": molecule.get("molecule_type"),
+                    "max_phase": molecule.get("max_phase"),
+                }
 
-        if not molecules:
-            logger.warning(f"No ChEMBL match found for InChIKey: {inchikey}")
-            return {"success": False, "message": "No ChEMBL match found"}
+        # Fallback: Try SMILES lookup if InChIKey failed and SMILES is available
+        if smiles:
+            logger.info(
+                f"InChIKey lookup failed or returned no results. Trying SMILES fallback: {smiles}"
+            )
+            params = {"molecule_structures__canonical_smiles": smiles}
+            data = get_response_json(url, params)
 
-        # Take the highest-confidence match returned by ChEMBL
-        molecule = molecules[0]
+            if data:
+                molecules = data.get("molecules", [])
+                if molecules:
+                    molecule = molecules[0]
+                    chembl_id = molecule.get("molecule_chembl_id")
+                    logger.info(f"ChEMBL molecule found via SMILES fallback: {chembl_id}")
 
-        chembl_id = molecule.get("molecule_chembl_id")
+                    return {
+                        "success": True,
+                        "chembl_id": chembl_id,
+                        "pref_name": molecule.get("pref_name"),
+                        "molecule_type": molecule.get("molecule_type"),
+                        "max_phase": molecule.get("max_phase"),
+                        "lookup_method": "smiles_fallback",
+                    }
 
-        logger.info(f"ChEMBL molecule found: {chembl_id}")
-
-        return {
-            "success": True,
-            "chembl_id": chembl_id,
-            "pref_name": molecule.get("pref_name"),
-            "molecule_type": molecule.get("molecule_type"),
-            "max_phase": molecule.get("max_phase"),
-        }
+        logger.warning(f"No ChEMBL match found for InChIKey: {inchikey}")
+        return {"success": False, "message": "No ChEMBL match found"}
 
     except Exception as e:
         logger.exception(f"ChEMBL molecule lookup error: {e}")
@@ -226,9 +260,11 @@ def get_chembl_bioactivity(
                         "target_chembl_id": act.get("target_chembl_id"),
                         "target_name": act.get("target_pref_name"),
                         "standard_type": act.get("standard_type"),
-                        "standard_value": act.get("standard_value"),
-                        "standard_units": act.get("standard_units"),
-                        "assay_description": act.get("assay_description"),
+                        "standard_value": str(act.get("standard_value", "N/A"))
+                        if act.get("standard_value") is not None
+                        else "N/A",
+                        "standard_units": act.get("standard_units", ""),
+                        "assay_description": act.get("assay_description", ""),
                     }
                 )
 
@@ -282,6 +318,24 @@ def get_chembl_bioactivity(
 
 
 def get_compound_bioactivity_from_mol(mol, limit: int = 20):
+    """
+    Pipeline to fetch comprehensive bioactivity data for a molecule.
+
+    Resolves PubChem metadata, looks up ChEMBL ID, then retrieves bioactivity records.
+    Includes fallback mechanisms for robustness against API issues.
+
+    Parameters
+    ----------
+    mol : rdkit.Chem.Mol
+        RDKit molecule object
+    limit : int
+        Maximum number of bioactivity records to retrieve
+
+    Returns
+    -------
+    dict
+        Dictionary with success status and data, or error information
+    """
     try:
         logger.info("Starting compound bioactivity pipeline")
 
@@ -292,10 +346,18 @@ def get_compound_bioactivity_from_mol(mol, limit: int = 20):
             return {"success": False, "stage": "pubchem"}
 
         inchikey = pubchem_data.get("inchikey")
-
         logger.info(f"Resolved InChIKey: {inchikey}")
 
-        chembl_data = get_chembl_molecule(inchikey)
+        # Get SMILES from RDKit molecule for fallback lookup
+        try:
+            smiles = MolToSmiles(mol)
+            logger.info(f"Generated SMILES for fallback: {smiles}")
+        except Exception as e:
+            logger.warning(f"Could not generate SMILES: {e}")
+            smiles = None
+
+        # Attempt ChEMBL lookup with InChIKey, fallback to SMILES if needed
+        chembl_data = get_chembl_molecule(inchikey, smiles=smiles)
 
         if not chembl_data.get("success"):
             logger.warning("ChEMBL molecule lookup failed")

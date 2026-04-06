@@ -22,3 +22,6 @@ htmlcov/
 # backups and logs
 .history/
 *.log
+
+# custom
+.DS_Store

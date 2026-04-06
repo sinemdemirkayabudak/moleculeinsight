@@ -11,5 +11,11 @@
   },
   "train_test_split": "80/20",
   "date_trained": "2026-03-13T13:11:26.673847",
-  "status": "Production - Combined features model"
+  "status": "Production - Combined features model",
+  "uncertainty_metrics": {
+    "residual_std": 0.37500000000000044,
+    "rmse": 0.6051859218455106,
+    "ci_95_margin": 0.7350000000000009,
+    "description": "95% confidence interval margin = 1.96 \u00d7 residual_std"
+  }
 }

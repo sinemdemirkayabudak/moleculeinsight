@@ -157,6 +157,68 @@ class TestGetChemblMolecule:
         assert result["success"] is False
         assert "error" in result
 
+    @patch("app.chembl.get_response_json")
+    def test_smiles_fallback_success(self, mock_get_response):
+        """Test successful SMILES fallback when InChIKey lookup fails."""
+        # First call (InChIKey) returns empty, second call (SMILES) returns data
+        mock_get_response.side_effect = [
+            {"molecules": []},  # InChIKey lookup fails
+            {
+                "molecules": [
+                    {
+                        "molecule_chembl_id": "CHEMBL26",
+                        "pref_name": "Ibuprofen",
+                        "molecule_type": "Small molecule",
+                        "max_phase": 4,
+                    }
+                ]
+            },  # SMILES lookup succeeds
+        ]
+
+        result = get_chembl_molecule("InvalidInChIKey", smiles="CC(C)Cc1ccc(cc1)C(C)C(=O)O")
+
+        assert result["success"] is True
+        assert result["chembl_id"] == "CHEMBL26"
+        assert result["pref_name"] == "Ibuprofen"
+        assert result.get("lookup_method") == "smiles_fallback"
+
+    @patch("app.chembl.get_response_json")
+    def test_smiles_fallback_no_data(self, mock_get_response):
+        """Test SMILES fallback when no data is returned from second call."""
+        mock_get_response.side_effect = [
+            {"molecules": []},  # InChIKey lookup fails
+            None,  # SMILES lookup returns None
+        ]
+
+        result = get_chembl_molecule("InvalidInChIKey", smiles="CC(C)Cc1ccc(cc1)C(C)C(=O)O")
+
+        assert result["success"] is False
+        assert "No ChEMBL match found" in result["message"]
+
+    @patch("app.chembl.get_response_json")
+    def test_smiles_fallback_empty_molecules(self, mock_get_response):
+        """Test SMILES fallback when molecules dict is empty."""
+        mock_get_response.side_effect = [
+            {"molecules": []},  # InChIKey lookup fails
+            {"molecules": []},  # SMILES lookup also returns empty
+        ]
+
+        result = get_chembl_molecule("InvalidInChIKey", smiles="CC(C)Cc1ccc(cc1)C(C)C(=O)O")
+
+        assert result["success"] is False
+        assert "No ChEMBL match found" in result["message"]
+
+    @patch("app.chembl.get_response_json")
+    def test_smiles_not_provided_fallback_skipped(self, mock_get_response):
+        """Test that SMILES fallback is skipped when SMILES is None."""
+        mock_get_response.return_value = {"molecules": []}
+
+        result = get_chembl_molecule("InvalidInChIKey", smiles=None)
+
+        # Should only call API once (for InChIKey)
+        assert mock_get_response.call_count == 1
+        assert result["success"] is False
+
 
 class TestGetChemblBioactivity:
     """Test ChEMBL bioactivity data retrieval for both molecule and target queries."""
@@ -472,3 +534,69 @@ class TestGetCompoundBioactivityFromMol:
         assert result["bioactivity"]["count"] == 50
         # Verify the limit was passed to get_chembl_bioactivity with molecule_chembl_id keyword
         mock_bioactivity.assert_called_once_with(molecule_chembl_id="CHEMBL25", limit=50)
+
+    @patch("app.chembl.MolToSmiles")
+    @patch("app.chembl.get_pubchem_metadata")
+    @patch("app.chembl.get_chembl_bioactivity")
+    @patch("app.chembl.get_chembl_molecule")
+    def test_pipeline_smiles_generation_fails(
+        self, mock_molecule, mock_bioactivity, mock_pubchem, mock_mol_to_smiles
+    ):
+        """Test pipeline when SMILES generation from RDKit fails."""
+        mock_mol_to_smiles.side_effect = Exception("SMILES generation failed")
+        mock_molecule.return_value = {
+            "success": True,
+            "chembl_id": "CHEMBL25",
+        }
+        mock_bioactivity.return_value = {
+            "success": True,
+            "count": 2,
+            "activities": [{"target_name": "Target 1"}],
+        }
+        mock_pubchem.return_value = {"inchikey": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N", "success": True}
+
+        mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+        result = get_compound_bioactivity_from_mol(mol)
+
+        # Pipeline should still succeed - SMILES generation failure is non-fatal
+        assert result["success"] is True
+        # Verify that get_chembl_molecule was called with smiles=None
+        mock_molecule.assert_called_once()
+        call_args = mock_molecule.call_args
+        assert call_args[1]["smiles"] is None
+
+    @patch("app.chembl.get_pubchem_metadata")
+    @patch("app.chembl.get_chembl_bioactivity")
+    @patch("app.chembl.get_chembl_molecule")
+    def test_pipeline_pubchem_failure(self, mock_molecule, mock_bioactivity, mock_pubchem):
+        """Test pipeline when PubChem lookup fails."""
+        mock_pubchem.return_value = {"success": False, "error": "PubChem lookup failed"}
+
+        mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+        result = get_compound_bioactivity_from_mol(mol)
+
+        assert result["success"] is False
+        assert result["stage"] == "pubchem"
+
+    @patch("app.chembl.get_pubchem_metadata")
+    @patch("app.chembl.get_chembl_bioactivity")
+    @patch("app.chembl.get_chembl_molecule")
+    def test_pipeline_smiles_fallback_used(self, mock_molecule, mock_bioactivity, mock_pubchem):
+        """Test pipeline with successful SMILES fallback in ChEMBL lookup."""
+        mock_pubchem.return_value = {"inchikey": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N", "success": True}
+        mock_molecule.return_value = {
+            "success": True,
+            "chembl_id": "CHEMBL25",
+            "lookup_method": "smiles_fallback",
+        }
+        mock_bioactivity.return_value = {
+            "success": True,
+            "count": 1,
+            "activities": [{"target_name": "Target 1"}],
+        }
+
+        mol = Chem.MolFromSmiles("CC(=O)Oc1ccccc1C(=O)O")
+        result = get_compound_bioactivity_from_mol(mol)
+
+        assert result["success"] is True
+        assert result["chembl"]["lookup_method"] == "smiles_fallback"

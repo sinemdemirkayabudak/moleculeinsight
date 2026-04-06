@@ -1,4 +1,4 @@
-"""Phase 2: Performance Visualizations for Streamlit Dashboard.
+"""Performance Visualizations for Streamlit Dashboard.
 
 Creates comprehensive performance plots from BEST MODEL ONLY (XGBoost):
 1. Test set residuals (actual vs predicted)
@@ -14,15 +14,19 @@ Output:
 - Focuses on XGBoost only (best model: R²=0.7018)
 """
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import json
 import logging
-from pathlib import Path
 
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.patches import Patch
 from rdkit import Chem
 from rdkit.Chem import rdFingerprintGenerator
 from sklearn.metrics import mean_absolute_error
@@ -31,7 +35,6 @@ from sklearn.model_selection import train_test_split
 from app.qsar.explain import QSARExplainer
 from app.qsar.features import compute_morgan_fingerprints, compute_rdkit_descriptors
 from app.qsar.qsar_prediction import QSARPipeline
-from app.qsar.visualize import SHAPVisualizer
 
 # Configure logging
 logging.basicConfig(
@@ -315,106 +318,97 @@ def save_morgan_annotations(xgb_model, smiles_list: list[str], output_path=None)
     else:
         output_path = Path(output_path)
 
-    print(f"\n📌 Saving Morgan bit annotations to {output_path}...")
+    print(f"\nSaving Morgan bit annotations to {output_path}...")
+    print("  → Annotating all 2048 Morgan bits (comprehensive coverage)...")
 
-    # Annotate ALL 2048 Morgan bits for comprehensive feature coverage
-    # This ensures predictions will have annotations for virtually all present bits
-    print("  → Annotating all 2048 Morgan bits (this may take a few minutes)...")
-
-    # Generate all bit indices (don't filter by importance - we need comprehensive coverage)
     all_bit_indices = list(range(2048))
-
     annotations_df = annotate_morgan_bits(xgb_model, smiles_list, bit_indices=all_bit_indices)
 
-    # Convert to dictionary: bit_index -> substructure
     annotations_dict = {}
     for _, row in annotations_df.iterrows():
         bit_idx = int(row["bit_index"])
         substructure = row["substructure"]
         annotations_dict[bit_idx] = substructure
 
-    # Save to JSON
     with open(output_path, "w") as f:
-        import json
-
         json.dump(annotations_dict, f)
 
     print(f"  ✓ Saved {len(annotations_dict)} Morgan bit annotations")
 
 
-def plot_residuals(xgb_model, X_test, y_test, plots_dir):
-    """Plot 1: XGBoost test set residuals (actual vs predicted)."""
-    print("\nCreating residuals plot...")
+def prepare_residuals_data(xgb_model, X_test, y_test):
+    """
+    Prepare residuals data (XGBoost test set residuals (actual vs predicted)) for interactive Streamlit scatter plot.
+
+    **CHANGES FROM ORIGINAL:**
+    - Removed matplotlib plotting code
+    - Returns structured dict instead of saving PNG
+    - Data ready for st.scatter_chart()
+    """
+    print("\nPreparing residuals data...")
 
     xgb_pred = xgb_model.predict(X_test)
     xgb_residual = y_test - xgb_pred
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    data = {
+        "predicted": xgb_pred.tolist(),
+        "residuals": xgb_residual.tolist(),
+        "actual": y_test.tolist(),
+        "zero_line": 0.0,
+        "color": "#81C784",
+    }
 
-    ax.scatter(
-        xgb_pred,
-        xgb_residual,
-        alpha=0.6,
-        s=50,
-        color="darkgreen",
-        edgecolors="black",
-        linewidth=0.5,
-    )
-    ax.axhline(y=0, color="red", linestyle="--", linewidth=2, label="Perfect prediction")
-    ax.set_xlabel("Predicted pIC50", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Residual (Actual - Predicted)", fontsize=12, fontweight="bold")
-    ax.set_title("XGBoost: Residuals Plot (Test Set)", fontsize=13, fontweight="bold")
-    ax.grid(True, alpha=0.3)
-    ax.legend()
-
-    plt.tight_layout()
-    fig.savefig(plots_dir / "01_residuals.png", dpi=300, bbox_inches="tight")
-    plt.close()
-    print("  ✓ Saved: 01_residuals.png")
+    print("  ✓ Residuals data prepared")
+    return data
 
 
-def plot_predictions_vs_actual(xgb_model, X_test, y_test, plots_dir):
-    """Plot 2: XGBoost predicted vs actual pIC50 values."""
-    print("Creating predictions vs actual plot...")
+def prepare_predictions_vs_actual_data(xgb_model, X_test, y_test):
+    """
+    Prepare XGBoost predictions vs actual pIC50 values for interactive scatter plot.
+
+    **CHANGES FROM ORIGINAL:**
+    - Removed matplotlib.scatter() code
+    - Returns dict with actual, predicted, and R² score
+    - Includes perfect prediction line coordinates
+    """
+    print("Preparing predictions vs actual data...")
 
     xgb_pred = xgb_model.predict(X_test)
     xgb_r2 = xgb_model.score(X_test, y_test)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    min_val = float(min(y_test.min(), xgb_pred.min()))
+    max_val = float(max(y_test.max(), xgb_pred.max()))
 
-    ax.scatter(
-        y_test, xgb_pred, alpha=0.6, s=50, color="darkgreen", edgecolors="black", linewidth=0.5
-    )
-    min_val = min(y_test.min(), xgb_pred.min())
-    max_val = max(y_test.max(), xgb_pred.max())
-    ax.plot(
-        [min_val, max_val], [min_val, max_val], "r--", linewidth=2.5, label="Perfect prediction"
-    )
-    ax.set_xlabel("Actual pIC50", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Predicted pIC50", fontsize=12, fontweight="bold")
-    ax.set_title(
-        f"XGBoost: Predictions vs Actual (R² = {xgb_r2:.4f})", fontsize=13, fontweight="bold"
-    )
-    ax.legend(fontsize=11)
-    ax.grid(True, alpha=0.3)
+    data = {
+        "actual": y_test.tolist(),
+        "predicted": xgb_pred.tolist(),
+        "r2_score": float(xgb_r2),
+        "perfect_line": {
+            "min": min_val,
+            "max": max_val,
+        },
+        "color": "#64B5F6",
+    }
 
-    plt.tight_layout()
-    fig.savefig(plots_dir / "02_predictions_vs_actual.png", dpi=300, bbox_inches="tight")
-    plt.close()
-    print("  ✓ Saved: 02_predictions_vs_actual.png")
+    print("  ✓ Predictions vs actual data prepared")
+    return data
 
 
-def plot_combined_feature_importance(
-    xgb_model, plots_dir, smiles_list, shap_vals, X_test, n_features=20
-):
-    """Plot 3: Top 20 Features using SHAP values (prediction-based importance).
+def prepare_feature_importance_data(shap_vals, n_features=20):
+    """
+    Prepare feature importance data using SHAP values (prediction-based, unbiased).
 
     SHAP values show actual contribution to predictions (unbiased), unlike gain importance
     which is biased toward high-cardinality features and model construction artifacts.
-    """
-    import json
 
-    print(f"Creating feature importance plot (top {n_features} features via SHAP)...")
+    **CHANGES FROM ORIGINAL:**
+    - Removed matplotlib.barh() plotting
+    - Returns list of feature dicts instead of saving PNG
+    - Preserves Morgan bit annotations
+    - Ready for st.bar_chart(horizontal=True)
+    - Sorted in descending order by importance
+    """
+    print(f"Preparing feature importance data (top {n_features} via SHAP)...")
 
     # Load Morgan bit annotations
     anno_data = {}
@@ -427,11 +421,11 @@ def plot_combined_feature_importance(
         except Exception as e:
             print(f"  Warning: Could not load annotations: {e}")
 
-    # Calculate mean absolute SHAP for each feature (prediction-based importance)
+    # Calculate SHAP-based importance
     mean_shap_abs = np.abs(shap_vals).mean(axis=0)
-    top_indices = np.argsort(mean_shap_abs)[-n_features:][::-1]
+    top_indices = np.argsort(mean_shap_abs)[-n_features:][::-1]  # Already descending
 
-    # RDKit descriptor names (indices 2048-2055)
+    # RDKit descriptor names
     rdkit_names = {
         2048: "MW (Molecular Weight)",
         2049: "LogP (Lipophilicity)",
@@ -443,150 +437,115 @@ def plot_combined_feature_importance(
         2055: "RingCount",
     }
 
-    # Build feature names for top features
-    final_labels = []
-    final_importances = []
-    final_indices = []
+    # Build feature list
+    features = []
 
     for idx in top_indices:
-        final_indices.append(idx)
-        final_importances.append(mean_shap_abs[idx])
+        importance = float(mean_shap_abs[idx])
 
         if idx < 2048:
-            # Morgan bit: include annotation if available
+            # Morgan bit
             bit_str = str(idx)
             annotation = anno_data.get(bit_str, "N/A")
             if annotation and annotation != "N/A":
-                final_labels.append(f"Morgan_Bit{idx:04d} → {annotation}")
+                label = f"Morgan_Bit{idx:04d} → {annotation}"
             else:
-                final_labels.append(f"Morgan_Bit{idx:04d}")
+                label = f"Morgan_Bit{idx:04d}"
+            feature_type = "Morgan"
+            color = "#64B5F6"
         elif idx in rdkit_names:
-            final_labels.append(rdkit_names[idx])
+            label = rdkit_names[idx]
+            feature_type = "RDKit"
+            color = "#81C784"
         else:
-            final_labels.append(f"RDKit_{idx - 2048}")
+            label = f"RDKit_{idx - 2048}"
+            feature_type = "RDKit"
+            color = "#81C784"
 
-    # Create plot with wider figure to accommodate annotations
-    fig, ax = plt.subplots(figsize=(14, 10))
-
-    # Color code: Morgan bits (blues), RDKit (greens)
-    colors = []
-    for idx in final_indices:
-        if idx < 2048:
-            colors.append(plt.cm.Blues(0.6))
-        else:
-            colors.append(plt.cm.Greens(0.5))
-
-    bars = ax.barh(
-        range(len(final_indices)), final_importances, color=colors, edgecolor="black", linewidth=1
-    )
-
-    ax.set_yticks(range(len(final_indices)))
-    ax.set_yticklabels(final_labels, fontsize=9)
-    ax.set_xlabel("SHAP Mean |Value| (Prediction Impact)", fontsize=12, fontweight="bold")
-    ax.set_title(
-        f"XGBoost: Top {n_features} Features (Morgan + RDKit) - SHAP Based",
-        fontsize=13,
-        fontweight="bold",
-    )
-    # Scale axis range by 1.08 to add margin and prevent label overlap
-    n = len(final_indices)
-    margin = n * 0.04  # 4% on each side = 8% total
-    ax.set_ylim(n - 1 + margin, -margin)
-    ax.grid(True, alpha=0.3, axis="x")
-
-    # Add value labels on bars
-    for _, (bar, val) in enumerate(zip(bars, final_importances, strict=False)):
-        width = bar.get_width()
-        ax.text(
-            width + max(final_importances) * 0.01,
-            bar.get_y() + bar.get_height() / 2.0,
-            f"{val:.4f}",
-            va="center",
-            fontsize=9,
+        features.append(
+            {
+                "feature": label,
+                "importance": importance,
+                "type": feature_type,
+                "index": int(idx),
+                "color": color,
+            }
         )
 
-    # Add padding on right side for value labels
-    max_x = max(final_importances)
-    ax.set_xlim(0, max_x * 1.08)
+    # ← Ensure descending order (highest importance first)
+    features.sort(key=lambda x: x["importance"], reverse=True)
 
-    # Add legend
-    legend_elements = [
-        Patch(facecolor=plt.cm.Blues(0.6), edgecolor="black", label="Morgan Bits (radius=2)"),
-        Patch(facecolor=plt.cm.Greens(0.5), edgecolor="black", label="RDKit Descriptors"),
-    ]
-    ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
+    data = {
+        "features": features,
+        "method": "SHAP mean absolute value (prediction-based, unbiased)",
+        "description": "Morgan Bits: Circular substructure patterns | RDKit: Physicochemical properties",
+        "gridlines": {
+            "show": True,
+            "axis": "x",
+            "color": "rgba(255, 255, 255, 0.1)",  # Barely visible white
+            "width": 1,
+        },
+    }
 
-    # Add explanation
-    explanation = (
-        "Feature Importance: SHAP mean |value| (prediction-based, unbiased)\n"
-        "Morgan Bits: Circular substructure patterns (SMILES notation after →)\n"
-        "RDKit: Physicochemical properties (MW, LogP, TPSA, etc.)"
-    )
-    fig.text(
-        0.12,
-        -0.02,
-        explanation,
-        fontsize=9,
-        style="italic",
-        color="#555555",
-        bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.6, pad=0.8),
-    )
-
-    plt.tight_layout()
-    fig.subplots_adjust(left=0.25, right=0.95, bottom=0.12)
-    fig.savefig(plots_dir / "03_feature_importance.png", dpi=300, bbox_inches="tight")
-    plt.close()
-    print("  ✓ Saved: 03_feature_importance.png")
+    print("  ✓ Feature importance data prepared")
+    return data
 
 
-def plot_error_distribution(xgb_model, X_test, y_test, plots_dir):
-    """Plot 3: XGBoost prediction error distribution."""
-    print("Creating error distribution plot...")
+def prepare_error_distribution_data(xgb_model, X_test, y_test, n_bins=100):
+    """
+    Prepare XGBoost prediction error distribution data.
+
+    **CHANGES FROM ORIGINAL:**
+    - Removed matplotlib.hist() code
+    - Returns histogram bins + summary statistics
+    - Ready for st.bar_chart() or plotly histogram
+    """
+    print("Preparing error distribution data...")
 
     xgb_pred = xgb_model.predict(X_test)
     xgb_errors = np.abs(y_test - xgb_pred)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Create histogram bins
+    hist, bin_edges = np.histogram(xgb_errors, bins=n_bins)
 
-    ax.hist(xgb_errors, bins=30, alpha=0.7, color="darkgreen", edgecolor="black", linewidth=1)
-    ax.axvline(
-        np.mean(xgb_errors),
-        color="red",
-        linestyle="--",
-        linewidth=2.5,
-        label=f"MAE = {np.mean(xgb_errors):.3f}",
-    )
-    ax.axvline(
-        np.median(xgb_errors),
-        color="orange",
-        linestyle="--",
-        linewidth=2.5,
-        label=f"Median = {np.median(xgb_errors):.3f}",
-    )
+    # Calculate bin width for metadata
+    bin_width = (bin_edges[-1] - bin_edges[0]) / n_bins
 
-    ax.set_xlabel("Absolute Error (pIC50)", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Frequency (#samples)", fontsize=12, fontweight="bold")
-    ax.set_title(
-        "XGBoost: Prediction Error Distribution (Test Set)", fontsize=13, fontweight="bold"
-    )
-    ax.legend(fontsize=11)
-    ax.grid(True, alpha=0.3, axis="y")
+    data = {
+        "errors": xgb_errors.tolist(),
+        "mean": float(np.mean(xgb_errors)),
+        "median": float(np.median(xgb_errors)),
+        "std": float(np.std(xgb_errors)),
+        "histogram": {
+            "counts": hist.tolist(),
+            "bin_edges": bin_edges.tolist(),
+            "bin_width": float(bin_width),
+        },
+        "color": "#FFB74D",
+        "n_bins": n_bins,
+    }
 
-    plt.tight_layout()
-    fig.savefig(plots_dir / "04_error_distribution.png", dpi=300, bbox_inches="tight")
-    plt.close()
-    print("  ✓ Saved: 04_error_distribution.png")
+    print("  ✓ Error distribution data prepared")
+    return data
 
 
-def plot_model_performance_summary(xgb_model, X_train, X_test, y_train, y_test, plots_dir):
-    """Plot 5: XGBoost model performance summary metrics."""
-    print("Creating model performance summary...")
+def prepare_model_summary_data(xgb_model, X_train, X_test, y_train, y_test):
+    """
+    Prepare XGBoost model performance summary metrics.
+
+    **CHANGES FROM ORIGINAL:**
+    - Removed complex matplotlib figure with custom styling
+    - Returns clean metrics dict
+    - Ready for st.metric() cards
+    """
+    print("Preparing model performance summary...")
 
     xgb_test_r2 = xgb_model.score(X_test, y_test)
-    # xgb_test_rmse = np.sqrt(mean_squared_error(y_test, xgb_model.predict(X_test)))
     xgb_test_mae = mean_absolute_error(y_test, xgb_model.predict(X_test))
+    xgb_train_r2 = xgb_model.score(X_train, y_train)
+    gap = xgb_train_r2 - xgb_test_r2
 
-    # Load actual CV metrics from saved performance file
+    # Load actual CV metrics
     metrics_path = Path(__file__).parent / "saved_models" / "egfr_performance.json"
     if metrics_path.exists():
         with open(metrics_path) as f:
@@ -597,299 +556,136 @@ def plot_model_performance_summary(xgb_model, X_train, X_test, y_train, y_test, 
         xgb_cv_r2_mean = 0.7007
         xgb_cv_r2_std = 0.0239
 
-    # Overfitting gap = training R² - test R²
-    xgb_train_r2 = xgb_model.score(X_train, y_train)
-    gap = xgb_train_r2 - xgb_test_r2
+    data = {
+        "test_r2": float(xgb_test_r2),
+        "train_r2": float(xgb_train_r2),
+        "test_mae": float(xgb_test_mae),
+        "cv_r2_mean": float(xgb_cv_r2_mean),
+        "cv_r2_std": float(xgb_cv_r2_std),
+        "overfitting_gap": float(gap),
+        "n_train_samples": int(len(y_train)),
+        "n_test_samples": int(len(y_test)),
+        "n_features": 2056,
+        "model_type": "XGBoost",
+        "features_breakdown": {
+            "morgan_fp": 2048,
+            "rdkit_descriptors": 8,
+        },
+    }
 
-    # Blue tone styling - darker background, lighter boxes
-    fig = plt.figure(figsize=(14, 6))
-    fig.patch.set_facecolor("#1a1f2e")
-
-    # Title with proper spacing
-    fig.suptitle("XGBoost · EGFR pIC50", fontsize=20, fontweight="bold", color="white", y=0.96)
-    fig.text(0.5, 0.88, "Model Performance Summary", fontsize=13, ha="center", color="#7a8399")
-
-    # Create 3 subplots horizontally
-    ax1 = plt.subplot(131)
-    ax2 = plt.subplot(132)
-    ax3 = plt.subplot(133)
-
-    for ax in [ax1, ax2, ax3]:
-        ax.set_facecolor("#4a5577")
-        ax.set_xlim(0, 10)
-        ax.set_ylim(0, 10)
-        ax.axis("off")
-        # Add border
-        rect = plt.Rectangle(
-            (0.1, 0.1),
-            9.8,
-            9.8,
-            fill=False,
-            edgecolor="#3a4566",
-            linewidth=2,
-            transform=ax.transData,
-        )
-        ax.add_patch(rect)
-
-    # LEFT BOX: TEST R²
-    ax1.text(
-        5,
-        9,
-        "TEST R²",
-        ha="center",
-        fontsize=11,
-        color="#7a8399",
-        fontweight="bold",
-        transform=ax1.transData,
-    )
-    ax1.text(
-        5,
-        6,
-        f"{xgb_test_r2:.3f}",
-        ha="center",
-        fontsize=52,
-        color="white",
-        fontweight="bold",
-        transform=ax1.transData,
-    )
-    # Horizontal line under the value
-    ax1.plot([1, 9], [3.0, 3.0], color="#4a5580", linewidth=1.5, transform=ax1.transData)
-
-    ax1.text(
-        5,
-        2.0,
-        f"CV R² {xgb_cv_r2_mean:.3f} ± {xgb_cv_r2_std:.3f}",
-        ha="center",
-        fontsize=14,
-        color="#5b9dd9",
-        transform=ax1.transData,
-    )
-    ax1.text(
-        5,
-        0.5,
-        "5-fold cross-validation",
-        ha="center",
-        fontsize=12,
-        color="#5a6a88",
-        style="italic",
-        transform=ax1.transData,
-    )
-
-    # MIDDLE BOX: MEAN ABS ERROR
-    ax2.text(
-        5,
-        9,
-        "MEAN ABS ERROR",
-        ha="center",
-        fontsize=11,
-        color="#7a8399",
-        fontweight="bold",
-        transform=ax2.transData,
-    )
-    ax2.text(
-        5,
-        6,
-        f"{xgb_test_mae:.3f}",
-        ha="center",
-        fontsize=52,
-        color="#FFB347",
-        fontweight="bold",
-        transform=ax2.transData,
-    )
-    ax2.text(
-        5, 4.5, "pIC50 units", ha="center", fontsize=10, color="#8899bb", transform=ax2.transData
-    )
-    # Horizontal line under pIC50 units
-    ax2.plot([1, 9], [3.0, 3.0], color="#4a5580", linewidth=1.5, transform=ax2.transData)
-
-    ax2.text(
-        5,
-        2.0,
-        "overfitting gap",
-        ha="center",
-        fontsize=12,
-        color="#5a6a88",
-        transform=ax2.transData,
-    )
-    ax2.text(
-        5,
-        0.5,
-        f"{gap:.3f}",
-        ha="center",
-        fontsize=28,
-        color="#00DD00",
-        fontweight="bold",
-        transform=ax2.transData,
-    )
-
-    # RIGHT BOX: DETAILS
-    ax3.text(
-        5,
-        9,
-        "DETAILS",
-        ha="center",
-        fontsize=11,
-        color="#7a8399",
-        fontweight="bold",
-        transform=ax3.transData,
-    )
-
-    details_lines = [
-        "Model",
-        "XGBoost",
-        "",
-        "Features",
-        "Morgan FP 2048",
-        "+ RDKit descriptors 8 = 2056",
-        "",
-        "Test set",
-        f"{len(y_test):,} samples",
-        "",
-        "CV",
-        "5-fold",
-    ]
-
-    y_pos = 7.8
-    for line in details_lines:
-        if line == "":
-            y_pos -= 0.4
-        else:
-            if line in ["Model", "Features", "Test set", "CV"]:
-                ax3.text(
-                    1.2,
-                    y_pos,
-                    line,
-                    ha="left",
-                    fontsize=9,
-                    color="#7a8399",
-                    fontweight="bold",
-                    transform=ax3.transData,
-                )
-            else:
-                ax3.text(
-                    1.2,
-                    y_pos,
-                    line,
-                    ha="left",
-                    fontsize=10,
-                    color="#ffffff",
-                    transform=ax3.transData,
-                )
-            y_pos -= 0.65
-
-    plt.subplots_adjust(left=0.08, right=0.95, top=0.82, bottom=0.1, wspace=0.3)
-
-    fig.savefig(
-        plots_dir / "05_model_summary.png", dpi=600, bbox_inches="tight", facecolor="#1a1f2e"
-    )
-    plt.close()
-    print("  ✓ Saved: 05_model_summary.png")
+    print("  ✓ Model summary data prepared")
+    return data
 
 
-def plot_shap_heatmap(xgb_model, shap_vals, X_test, smiles_list, plots_dir, n_samples=50):
-    """Plot 6: SHAP heatmap showing feature contributions across samples.
-
-    Uses the same top 20 features as plot 3, selected via SHAP values.
-    Displays interpretable feature names with Morgan bit substructure annotations.
+def prepare_shap_heatmap_data(
+    xgb_model, shap_vals, X_test, smiles_list, n_samples=50, n_features=20
+):
     """
-    print("Creating SHAP heatmap (with Morgan annotations, consistent with plot 3)...")
+    Prepare SHAP heatmap data (sample × feature matrix of SHAP values).
+
+    **CHANGES FROM ORIGINAL:**
+    - Removed SHAPVisualizer.heatmap() matplotlib call
+    - Returns 2D matrix + feature labels
+    - Ready for plotly.express.imshow() or seaborn heatmap
+
+    """
+    print("Preparing SHAP heatmap data...")
 
     try:
-        # Sample data for heatmap (too many samples makes it unreadable)
+        # Sample data
         sample_indices = np.random.choice(len(X_test), min(n_samples, len(X_test)), replace=False)
-        X_sample = X_test[sample_indices]
         shap_sample = shap_vals[sample_indices]
 
-        # Get top 20 using SHAP (same metric as plot 3)
+        # Get top features via SHAP
         mean_shap_abs = np.abs(shap_vals).mean(axis=0)
-        top_20_indices = np.argsort(mean_shap_abs)[-20:][::-1]
+        top_indices = np.argsort(mean_shap_abs)[-n_features:][::-1]
 
-        # RDKit descriptor names
+        # RDKit names
         rdkit_names = {
-            2048: "MW (Molecular Weight)",
-            2049: "LogP (Lipophilicity)",
-            2050: "TPSA (Polar Surface)",
-            2051: "HBD (H-Bond Donors)",
-            2052: "HBA (H-Bond Acceptors)",
-            2053: "RotBonds (Rotatable)",
+            2048: "MW",
+            2049: "LogP",
+            2050: "TPSA",
+            2051: "HBD",
+            2052: "HBA",
+            2053: "RotBonds",
             2054: "AromaticRings",
             2055: "RingCount",
         }
 
-        # Extract Morgan bits in top 20
-        morgan_bits_in_top_20 = [idx for idx in top_20_indices if idx < 2048]
-        rdkit_indices_in_top_20 = [idx for idx in top_20_indices if idx >= 2048]
-
-        # Annotate Morgan bits
+        # Annotate Morgan bits in top features
+        morgan_bits_in_top = [idx for idx in top_indices if idx < 2048]
         feature_labels = {}
-        if morgan_bits_in_top_20:
-            print(f"  → Found {len(morgan_bits_in_top_20)} Morgan bits in top 20 features")
-            morgan_annotations = annotate_morgan_bits(
-                xgb_model, smiles_list, bit_indices=morgan_bits_in_top_20
-            )
 
+        if morgan_bits_in_top:
+            morgan_annotations = annotate_morgan_bits(
+                xgb_model, smiles_list, bit_indices=morgan_bits_in_top
+            )
             for _, row in morgan_annotations.iterrows():
                 bit_id = row["bit_index"]
-                if bit_id in morgan_bits_in_top_20:
-                    feature_labels[bit_id] = row["feature_name"]
+                feature_labels[bit_id] = row["feature_name"]
 
         # Add RDKit names
-        for idx in rdkit_indices_in_top_20:
-            feature_labels[idx] = rdkit_names.get(idx, f"RDKit_{idx - 2048}")
+        for idx in top_indices:
+            if idx >= 2048:
+                feature_labels[idx] = rdkit_names.get(idx, f"RDKit_{idx - 2048}")
 
-        # Create ordered labels for top 20
+        # Create ordered labels
         final_labels = []
-        for idx in top_20_indices:
+        for idx in top_indices:
             if idx in feature_labels:
                 final_labels.append(feature_labels[idx])
             elif idx < 2048:
                 final_labels.append(f"Morgan_Bit{idx}")
             else:
-                final_labels.append(rdkit_names.get(idx, f"RDKit_{idx - 2048}"))
+                final_labels.append(f"RDKit_{idx - 2048}")
 
-        # Select top features from SHAP values
-        shap_vals_top = shap_sample[:, top_20_indices]
-        X_sample_top = X_sample[:, top_20_indices]
+        # Extract SHAP matrix for top features
+        shap_matrix_samples_x_features = shap_sample[:, top_indices]  # (n_samples, n_features)
 
-        # Create heatmap
-        base_value = float(xgb_model.predict(X_test).mean())
+        # TRANSPOSE so features are rows, samples are columns
+        shap_matrix_features_x_samples = shap_matrix_samples_x_features.T  # (n_features, n_samples)
 
-        _ = SHAPVisualizer.heatmap(
-            shap_vals=shap_vals_top,
-            X=X_sample_top,
-            base_value=base_value,
-            feature_names=final_labels,
-            max_display=20,
-            figsize=(14, 8),
-            title="XGBoost: SHAP Feature Contribution Heatmap (Top 20 Features)",
-            save_path=str(plots_dir / "06_shap_heatmap.png"),
-        )
-        plt.close()
-        print("✓ Saved: 06_shap_heatmap.png")
+        # Create sample labels (x-axis)
+        sample_labels = [f"Sample_{i + 1}" for i in range(len(sample_indices))]
+
+        data = {
+            "shap_matrix": shap_matrix_features_x_samples.tolist(),  # ← TRANSPOSED
+            "feature_names": final_labels,  # y-axis labels
+            "sample_labels": sample_labels,  # ← x-axis labels
+            "sample_indices": sample_indices.tolist(),
+            "base_value": float(xgb_model.predict(X_test).mean()),
+            "n_samples": n_samples,
+            "n_features": n_features,
+            "orientation": "features_on_y",  # ← metadata for rendering
+        }
+
+        print("  ✓ SHAP heatmap data prepared")
+        return data
 
     except Exception as e:
-        logger.warning(f"SHAP heatmap generation skipped: {type(e).__name__}: {e}")
-        print(f"⚠ Skipped SHAP heatmap ({type(e).__name__})")
+        logger.warning(f"SHAP heatmap preparation failed: {e}")
+        print(f"  ⚠ SHAP heatmap skipped ({type(e).__name__})")
+        return None
 
 
 def main():
-    """Generate all Phase 2 visualizations (XGBoost only - best model)."""
+    """Generate all visualizations (XGBoost only - best model)."""
     print("\n" + "=" * 70)
-    print("PHASE 2: PERFORMANCE VISUALIZATIONS (XGBoost Only)")
+    print("PERFORMANCE DATA EXPORT (JSON for Streamlit)")
     print("=" * 70)
 
     # Create output directory
     plots_dir = create_output_dir()
     print(f"\nOutput directory: {plots_dir}/\n")
 
-    # Load best model (XGBoost only)
-    xgb_model, _ = load_or_train_models()  # xgb_model, loaded
+    # Load model
+    xgb_model, _ = load_or_train_models()
 
-    # Load and prepare data
-    X_train, X_test, y_train, y_test, _, smiles_list = load_and_prepare_data()  # _: X_morgan
+    # Load data
+    X_train, X_test, y_train, y_test, _, smiles_list = load_and_prepare_data()
 
-    # Compute SHAP values once (used by both plot 3 and 6)
-    print("\nComputing SHAP values (used for both feature importance and heatmap)...")
+    # Compute SHAP values once
+    print("\nComputing SHAP values (used for feature importance and heatmap)...")
     background_indices = np.random.choice(len(X_test), min(100, len(X_test) // 2), replace=False)
     X_background = X_test[background_indices]
 
@@ -900,24 +696,47 @@ def main():
     )
     print(f"  ✓ SHAP values computed for {len(X_test)} test samples")
 
-    # Generate all plots
-    plot_residuals(xgb_model, X_test, y_test, plots_dir)
-    plot_predictions_vs_actual(xgb_model, X_test, y_test, plots_dir)
-    plot_combined_feature_importance(
-        xgb_model, plots_dir, smiles_list, shap_vals, X_test, n_features=20
-    )
-    plot_error_distribution(xgb_model, X_test, y_test, plots_dir)
-    plot_model_performance_summary(xgb_model, X_train, X_test, y_train, y_test, plots_dir)
-    plot_shap_heatmap(xgb_model, shap_vals, X_test, smiles_list, plots_dir, n_samples=50)
+    # Prepare all plot data (NEW: JSON export instead of PNG)
+    print("\n" + "=" * 70)
+    print("GENERATING PLOT DATA")
+    print("=" * 70)
 
-    # Save Morgan bit annotations for use in predictions
+    plot_data = {
+        "metadata": {
+            "model": "XGBoost",
+            "n_train": int(len(X_train)),
+            "n_test": int(len(X_test)),
+            "n_features": 2056,
+            "generated_at": pd.Timestamp.now().isoformat(),
+        },
+        "residuals": prepare_residuals_data(xgb_model, X_test, y_test),
+        "predictions_vs_actual": prepare_predictions_vs_actual_data(xgb_model, X_test, y_test),
+        "feature_importance": prepare_feature_importance_data(
+            xgb_model, smiles_list, shap_vals, n_features=20
+        ),
+        "error_distribution": prepare_error_distribution_data(xgb_model, X_test, y_test),
+        "model_summary": prepare_model_summary_data(xgb_model, X_train, X_test, y_train, y_test),
+        "shap_heatmap": prepare_shap_heatmap_data(
+            xgb_model, shap_vals, X_test, smiles_list, n_samples=50, n_features=20
+        ),
+    }
+
+    # Save to JSON
+    json_path = plots_dir / "performance_data.json"
+    with open(json_path, "w") as f:
+        json.dump(plot_data, f, indent=2)
+
+    print(f"\n✅ All plot data saved to: {json_path}")
+    print(f"   File size: {json_path.stat().st_size / 1024:.1f} KB")
+
+    # Save Morgan annotations
     save_morgan_annotations(
         xgb_model,
         smiles_list,
         output_path=Path(__file__).parent / "saved_models" / "morgan_bit_annotations.json",
     )
 
-    # Compute and save residual standard error for confidence intervals in predictions
+    # Compute uncertainty metrics
     print("\nComputing prediction uncertainty metrics...")
     y_pred_test = xgb_model.predict(X_test)
     residuals = y_test - y_pred_test
@@ -929,7 +748,8 @@ def main():
 
     # Update metadata with uncertainty metrics
     try:
-        with open(Path(__file__).parent / "saved_models" / "egfr_metadata.json") as f:
+        metadata_path = Path(__file__).parent / "saved_models" / "egfr_metadata.json"
+        with open(metadata_path) as f:
             metadata = json.load(f)
 
         metadata["uncertainty_metrics"] = {
@@ -939,7 +759,7 @@ def main():
             "description": "95% confidence interval margin = 1.96 × residual_std",
         }
 
-        with open(Path(__file__).parent / "saved_models" / "egfr_metadata.json", "w") as f:
+        with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2)
 
         print("  ✓ Updated metadata with uncertainty metrics")
@@ -947,16 +767,16 @@ def main():
         print(f"  ⚠ Could not update metadata: {e}")
 
     print("\n" + "=" * 70)
-    print("PHASE 2 COMPLETE ✅")
+    print("MODEL VISUALIZATIONS COMPLETE ✅")
     print("=" * 70)
-    print("\nAll visualizations saved to: qsar/visualizations/")
-    print("\n6 performance plots created:")
+    print("\nData exported to: qsar/visualizations/performance_data.json")
+    print("\nPlot data structure:")
     print("  1. Residuals (XGBoost predictions - actual values)")
     print("  2. Predictions vs Actual (calibration plot)")
     print("  3. Feature Importance (Top 20: SHAP-based, Morgan + RDKit)")
     print("  4. Error Distribution (histogram of prediction errors)")
     print("  5. Model Performance Summary (R², RMSE, MAE, overfitting gap)")
-    print("  6. SHAP Heatmap (top 20 features, consistent with plot 3)")
+    print("  6. SHAP Heatmap (top 20 features)")
     print("\nFeature Importance Method:")
     print("   • SHAP values (prediction-based, unbiased)")
     print("   • Shows actual contribution to each prediction")
@@ -968,7 +788,7 @@ def main():
     print("   • SMILES fragment shown for each Morgan bit")
     print("   • * (asterisk): Indicates truncated SMILES - original fragment is >12 chars")
     print("   • Examples: Morgan_Bit1234_c1ccccc1 (full) vs Morgan_Bit567_c1ccc(O*  (truncated)")
-    print("\n✨ These plots will be displayed in Streamlit dashboard (Phase 3)")
+    print("\n✨ These plots will be displayed in Streamlit dashboard")
 
 
 if __name__ == "__main__":

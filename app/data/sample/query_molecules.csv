@@ -1,7 +1,6 @@
 smiles,name
-CCO,Ethanol
-CCN,Ethylamine
-CCC,Propane
-CC(=O)O,AceticAcid
-c1ccccc1,Benzene
+COCCOC1=C(C=C2C(=C1)C(=NC=N2)NC3=CC=CC(=C3)C#C)OCCOC,Erlotinib
+COC1=C(C=C2C(=C1)N=CN=C2NC3=CC(=C(C=C3)F)Cl)OCCCN4CCOCC4,Gefitinib
+CS(=O)(=O)CCNCC1=CC=C(O1)C2=CC3=C(C=C2)N=CN=C3NC4=CC(=C(C=C4)OCC5=CC(=CC=C5)F)Cl,Lapatinib
+CN1C=C(C2=CC=CC=C21)C3=NC(=NC=C3)NC4=C(C=C(C(=C4)NC(=O)C=C)N(C)CCN(C)C)OC,Osimertinib
 

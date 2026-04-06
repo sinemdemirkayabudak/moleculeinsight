@@ -74,6 +74,16 @@ class TestPrepareData:
         result = trainer.prepare_data(X, y)
         assert result is not None
 
+    def test_prepare_data_y_contains_nan_raises_error(self):
+        """Test that NaN values in y raise ValueError."""
+        X = np.random.randn(100, 10)
+        y = np.random.randn(100)
+        y[5] = np.nan
+        trainer = QSARModelTrainer()
+
+        with pytest.raises(ValueError, match="y contains.*NaN values"):
+            trainer.prepare_data(X, y)
+
 
 class TestRandomForestTraining:
     """Test RandomForest model training."""

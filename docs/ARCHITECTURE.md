@@ -6,11 +6,11 @@
 ## Overview
 
 MoleculeInsight combines multiple molecular analysis techniques:
-- **Core**: Lipinski compliance, molecular properties, PubChem/ChEMBL integration
+- **Single Molecule**: Lipinski compliance, molecular properties, PubChem/ChEMBL integration
 - **Similarity Search**: Morgan fingerprints + Tanimoto similarity for structural matching
 - **QSAR Prediction**: ML models (RF/XGBoost) for EGFR IC50 bioactivity
 - **Virtual Screening**: Batch processing with drug-likeness filtering
-- **Scaffold & SAR** ✨: Murcko scaffolds, activity cliff detection, IC50 matching
+- **Scaffold & SAR Explorer** ✨: Murcko scaffolds, activity cliff detection, IC50 matching
 
 ## Project Structure (Condensed)
 
@@ -22,46 +22,50 @@ app/
 ├── chembl.py                     # ChEMBL API (24h cache)
 ├── utils.py                      # Utilities & safe execution
 ├── config.py                     # Configuration, logging
-├── similarity_search/            # Morgan fingerprints (98.7% coverage)
+├── similarity_search/            # Morgan fingerprints (100% coverage)
 │   ├── fingerprints.py           # 2048-bit ECFP4
 │   ├── pipeline.py               # Tanimoto similarity
 │   ├── cli.py                    # Command-line interface
 │   ├── validators.py             # Input validation
 │   └── visualization.py          # Structure images & charts
 │
-├── qsar/                         # EGFR bioactivity (98.3% coverage)
+├── qsar/                         # EGFR bioactivity (100% coverage)
 │   ├── train_models.py           # RF + XGBoost training
 │   ├── qsar_prediction.py        # Prediction pipeline
 │   ├── features.py               # Morgan + RDKit descriptors
 │   ├── explain.py                # SHAP feature importance
-│   ├── preprocessi.py            # Data cleaning
-│   ├── predict.py, visualize.py, data_loader.py
+│   ├── preprocessing.py          # Data cleaning
+│   ├── predict.py, visualize.py, data_loader.py, smiles_processor.py
+│   ├── model_visualizations.py   # Generation of model performance plots
 │   └── saved_models/             # Trained RF & XGBoost models
+│   └── visualizations/           # Model performance plots
 │
-├── scaffold_sar.py               # Scaffold extraction (99.50% coverage)
+├── scaffold_sar.py               # Scaffold extraction (99.49% coverage)
 ├── virtual_screening.py          # Batch QSAR (100% coverage)
 ├── ui.py                         # Streamlit dashboards (0% - UI code excluded)
 └── data/sample/                  # Sample data for demos
 ```
 
-## Test Coverage (621 tests, 72.40%)
+## Test Coverage (708 tests, 69.45%)
 
 | Module | Coverage | Type |
 |--------|----------|------|
-| **Core Modules** | **100%** | molecule, chembl, pubchem, validators, utils |
-| **QSAR** | **98.3%** | train_models 100%, train 97.59%, model_viz 85.63% |
-| **Similarity Search** | **98.7%** | fingerprints 100%, pipeline 100%, viz 96.51% |
-| **Scaffold & SAR** | **99.50%** | 150 lines, 1 uncovered branch |
+| **Single Molecule Analysis** | **100%** | molecule, chembl (100%), pubchem, validators, utils (100%) |
+| **QSAR Model** | **99.51%** | train_models 100%, train 100%, model_viz 98.49% |
+| **Similarity Search** | **100%** | fingerprints 100%, pipeline 100%, viz 100% |
 | **Virtual Screening** | **100%** | 104 lines |
+| **Scaffold & SAR Explorer** | **99.49%** | 150 lines |
+| **SMILES Processor** | **100%** | 36 lines with comprehensive tests |
 | **UI Layer** | **0%** | Streamlit components (excluded by design) |
 
 ### Test Distribution
-- Core module tests: 82
-- QSAR tests: ~102
-- Similarity tests: ~197
-- Scaffold SAR tests: 147
-- Virtual screening tests: 36
-- CLI/Integration tests: ~71
+- Single Molecule tests: 100 (100% coverage)
+- QSAR tests: 150+ (100% coverage across 9 modules)
+- Similarity tests: 200+ (100% coverage)  
+- Virtual screening tests: 50+ (100% coverage)
+- Scaffold SAR tests: 150+ (99.49% coverage)
+- SMILES Processor tests: 36 (100% coverage)
+- CLI/Integration tests: 70+ (100% coverage)
 
 Run tests:
 ```bash
@@ -161,11 +165,8 @@ All modules include comprehensive exception handling:
 **Trigger**: Every push to main/dev  
 **Steps**:
 1. Ruff linting (no formatting issues)
-2. Pytest suite (621 tests, <60 seconds)
-3. Coverage report (72.40% overall)
-4. Status: ✅ All tests passing
-
-View in `.github/workflows/tests.yml`
+2. Pytest suite (708 tests, <30 seconds)
+3. Coverage report (69.45% overall)
 
 ## Module Dependencies
 
@@ -200,6 +201,6 @@ virtual_screening.py (uses qsar_prediction + features)
 - **Cached**: API responses cached 24 hours to reduce requests
 - **Exception-safe**: All functions handle errors gracefully
 - **Type-hinted**: Full type annotations for IDE support
-- **Tested**: 72.4% coverage, 100% on core logic
+- **Tested**: 69.45% coverage (708 tests), 100% on core logic
 - **Documented**: Docstrings on all functions and classes
 - **Type Safety**: Full type hints throughout for IDE support

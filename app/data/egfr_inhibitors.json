@@ -1,0 +1,187 @@
+{
+  "compounds": [
+    {
+      "name": "Erlotinib",
+      "smiles": "COCCOC1=C(C=C2C(=C1)C(=NC=N2)NC3=CC=CC(=C3)C#C)OCCOC",
+      "generation": "1st",
+      "target": "EGFR",
+      "molecular_weight": 379.38,
+      "cas_number": "183319-69-9",
+      "trade_names": [
+        "Tarceva"
+      ],
+      "indications": [
+        "NSCLC",
+        "Pancreatic Cancer"
+      ],
+      "fda_approval_year": 2004,
+      "mechanism": "EGFR tyrosine kinase inhibitor (non-selective)",
+      "bioactivity": [
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "IC50",
+          "value": 2,
+          "units": "nM",
+          "assay_description": "Inhibition of human recombinant EGFR autophosphorylation",
+          "selection_rationale": "Demonstrates kinase inhibition potency (IC50). Lower values = stronger functional inhibition of EGFR phosphorylation. Essential metric for TKI efficacy."
+        },
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "Kd",
+          "value": 0.4,
+          "units": "nM",
+          "assay_description": "Binding affinity to EGFR kinase domain",
+          "selection_rationale": "Complements IC50 with binding affinity (Kd). Shows molecular-level interaction strength with EGFR kinase domain. Different from functional inhibition—provides complete mechanistic picture."
+        }
+      ]
+    },
+    {
+      "name": "Gefitinib",
+      "smiles": "COC1=C(C=C2C(=C1)N=CN=C2NC3=CC(=C(C=C3)F)Cl)OCCCN4CCOCC4",
+      "generation": "1st",
+      "target": "EGFR",
+      "molecular_weight": 446.9,
+      "logp": 4.1,
+      "hba": 8,
+      "hbd": 1,
+      "rotatable_bonds": 8,
+      "cas_number": "184475-35-2",
+      "trade_names": [
+        "Iressa",
+        "ZD1839"
+      ],
+      "indications": [
+        "NSCLC"
+      ],
+      "fda_approval_year": 2003,
+      "mechanism": "EGFR tyrosine kinase inhibitor (first-generation)",
+      "molecular_formula": "C22H24ClFN4O3",
+      "bioactivity": [
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "IC50",
+          "value": 26,
+          "units": "nM",
+          "assay_description": "Inhibition of EGFR autophosphorylation in A431 cells",
+          "selection_rationale": "Functional inhibition potency (IC50). Cell-based assay showing Gefitinib's ability to block downstream EGFR signaling. Critical for understanding clinical efficacy."
+        },
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "Kd",
+          "value": 0.6,
+          "units": "nM",
+          "assay_description": "Binding assay to EGFR kinase domain",
+          "selection_rationale": "Molecular binding affinity (Kd). Shows tight binding to EGFR kinase domain. Combined with IC50 demonstrates complete spectrum: molecular binding + functional inhibition."
+        }
+      ]
+    },
+    {
+        "name": "Lapatinib",
+        "smiles": "CS(=O)(=O)CCNCC1=CC=C(O1)C2=CC3=C(C=C2)N=CN=C3NC4=CC(=C(C=C4)OCC5=CC(=CC=C5)F)Cl",
+        "generation": "2nd",
+        "target": "EGFR/HER2",
+        "molecular_weight": 581.1,
+        "logp": 5.3,
+        "hba": 8,
+        "hbd": 2,
+        "rotatable_bonds": 10,
+        "cas_number": "231277-92-2",
+        "trade_names": [
+          "Tykerb",
+          "GW572016"
+        ],
+        "indications": [
+          "Breast cancer",
+          "EGFR/HER2-positive cancers"
+        ],
+        "fda_approval_year": 2007,
+        "mechanism": "Dual EGFR/HER2 tyrosine kinase inhibitor (reversible)",
+        "molecular_formula": "C29H26ClFN4O4S",
+        "bioactivity": [
+          {
+            "target_chembl_id": "CHEMBL203",
+            "target_name": "Epidermal growth factor receptor",
+            "activity_type": "IC50",
+            "value": 10.8,
+            "units": "nM",
+            "assay_description": "Inhibition of EGFR autophosphorylation",
+            "selection_rationale": "Dual EGFR/HER2 inhibitor, FDA-approved for breast cancer. Demonstrates high potency and clinical efficacy."
+          },
+          {
+            "target_chembl_id": "CHEMBL1824",
+            "target_name": "Receptor tyrosine-protein kinase erbB-2 (HER2)",
+            "activity_type": "IC50",
+            "value": 9.2,
+            "units": "nM",
+            "assay_description": "Inhibition of HER2 autophosphorylation",
+            "selection_rationale": "Demonstrates strong HER2 inhibition, supporting dual TKI mechanism."
+          }
+        ]
+      },
+    {
+      "name": "Osimertinib",
+      "smiles": "CN1C=C(C2=CC=CC=C21)C3=NC(=NC=C3)NC4=C(C=C(C(=C4)NC(=O)C=C)N(C)CCN(C)C)OC",
+      "generation": "3rd",
+      "target": "EGFR",
+      "molecular_weight": 499.6,
+      "logp": 3.7,
+      "hba": 7,
+      "hbd": 2,
+      "rotatable_bonds": 10,
+      "cas_number": "1421373-65-0",
+      "trade_names": [
+        "Tagrisso",
+        "AZD-9291"
+      ],
+      "indications": [
+        "NSCLC with T790M mutation",
+        "Adjuvant therapy"
+      ],
+      "fda_approval_year": 2015,
+      "mechanism": "EGFR TKI (T790M mutation-specific, wild-type EGFR-sparing)",
+      "molecular_formula": "C28H33N7O2",
+      "half_life_hours": 48,
+      "protein_binding_percent": 95.0,
+      "target_mutations": [
+        "T790M",
+        "Exon19 deletions",
+        "L858R"
+      ],
+      "bioactivity": [
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "IC50",
+          "value": 16,
+          "units": "nM",
+          "assay_description": "Inhibition of EGFR T790M mutant",
+          "selection_rationale": "Resistance mutation selectivity (CRITICAL). T790M is the gatekeeper mutation causing resistance to 1st/2nd-gen TKIs. 3rd-gen drugs overcome this. Shows Osimertinib's clinical value."
+        },
+        {
+          "target_chembl_id": "CHEMBL203",
+          "target_name": "Epidermal growth factor receptor",
+          "activity_type": "IC50",
+          "value": 80,
+          "units": "nM",
+          "assay_description": "Inhibition of wild-type EGFR kinase",
+          "selection_rationale": "Wild-type EGFR modulation (T790M-SPARING mechanism). Less potent vs T790M (80 vs 16 nM)—shows selectivity for mutant over normal. Prevents toxicity from blocking normal EGFR signaling."
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "source": "PubChem (NCBI) + ChEMBL bioactivity database",
+    "date_created": "2026-03-27",
+    "smiles_type": "Canonical",
+    "standardization_tool": "OEChem 4.2.0",
+    "inchi_version": "1.07.4",
+    "total_compounds": 4,
+    "application": "EGFR IC50 Prediction & Molecular Insight",
+    "bioactivity_cached": true,
+    "bioactivity_note": "Bioactivity data cached locally to avoid repeated API calls to ChEMBL"
+  }
+}

@@ -844,8 +844,8 @@ class TestFetchMissingIc50Values:
 
     def test_fetch_missing_with_matches(self):
         """Test fetch when SMILES matches are found in sample data."""
-        # Use real SMILES from the sample data
-        sample_smiles = "Cc1cc(C)c(/C=C2\C(=O)Nc3ncnc(Nc4ccc(F)c(Cl)c4)c32)[nH]1"
+        # Use real SMILES from the sample data: Afatinib reference compound
+        sample_smiles = "CC(C)Nc1c(Cl)cc(cc1Nc2c(I)cc(N3CCOCC3)cc2)NC(=O)C"
         df = pd.DataFrame(
             {
                 "smiles": [sample_smiles],
@@ -855,7 +855,7 @@ class TestFetchMissingIc50Values:
         result = fetch_missing_ic50_values(df)
         # Should return dataframe with matched IC50 value
         assert isinstance(result, pd.DataFrame)
-        # The matched value should be updated (one of 41.0, 300.0, or 7820.0)
+        # The matched value should be updated (0.1 from sample data)
         assert result["standard_value"].notna().any()
 
     def test_fetch_missing_mixed_matches_no_matches(self):

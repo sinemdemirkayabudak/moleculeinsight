@@ -199,11 +199,11 @@ class TestVisualizationDistributionExceptionPaths:
         query_df = pd.DataFrame({"query_name": ["q1"]})
 
         with patch(
-            "app.similarity_search.visualization.plt.subplots", side_effect=Exception("Plot error")
+            "app.similarity_search.visualization.st.bar_chart", side_effect=Exception("Plot error")
         ):
-            result = visualize_distribution(top_hits, query_df)
+            result = visualize_distribution(top_hits, query_df, show=True)
             # Should return empty dict on error
-            assert isinstance(result, dict)
+            assert result == {}
 
     def test_visualize_distribution_many_results(self):
         """Test visualize_distribution with large number of results."""
@@ -417,14 +417,14 @@ class TestVisualizationErrorHandling:
 
         query_df = pd.DataFrame({"query_name": ["q1"]})
 
-        # Mock matplotlib to raise exception
+        # Mock streamlit to raise exception
         with patch(
-            "app.similarity_search.visualization.plt.subplots",
+            "app.similarity_search.visualization.st.bar_chart",
             side_effect=RuntimeError("Plot error"),
         ):
-            result = visualize_distribution(top_hits, query_df, show=False)
+            result = visualize_distribution(top_hits, query_df, show=True)
             # Should return empty dict on error
-            assert isinstance(result, dict)
+            assert result == {}
 
 
 class TestRankResultsWithEmptyMatches:
