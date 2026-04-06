@@ -52,6 +52,23 @@ Enter SMILES strings or upload CSV files for instant multi-faceted molecular ana
 
 **Prerequisites:** Python 3.11+, macOS (Intel/Apple Silicon)
 
+### System Dependencies
+
+Before running MoleculeInsight, install the system OpenMP library (required by scikit-learn):
+
+**macOS:**
+```bash
+brew install libomp
+```
+
+**Ubuntu/Linux:**
+```bash
+sudo apt-get install libomp-dev
+```
+
+**Windows:**
+Install Microsoft C++ Build Tools or Visual Studio (includes OpenMP by default)
+
 1. **Install dependencies:**
    ```bash
    cd moleculeinsight

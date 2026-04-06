@@ -140,12 +140,13 @@ def summarize_scaffolds(df: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     df : pd.DataFrame
-        Must contain 'scaffold' and 'standard_value' (IC50) columns.
+        Must contain 'scaffold', 'standard_value' (IC50), and 'molecule_id' columns.
 
     Returns
     -------
     pd.DataFrame
-        Scaffold summary with columns: scaffold, molecule_count, avg_activity.
+        Scaffold summary with columns: scaffold, molecule_count, avg_activity,
+        min_activity, max_activity, and molecules (comma-separated molecule_ids).
     """
     if "scaffold" not in df.columns or "standard_value" not in df.columns:
         logger.error("Dataframe must contain 'scaffold' and 'standard_value' columns")
@@ -158,6 +159,7 @@ def summarize_scaffolds(df: pd.DataFrame) -> pd.DataFrame:
             avg_activity=("standard_value", "mean"),
             min_activity=("standard_value", "min"),
             max_activity=("standard_value", "max"),
+            molecules=("molecule_id", lambda x: ", ".join(x.astype(str))),
         )
         .reset_index()
         .sort_values(["molecule_count", "avg_activity"], ascending=[False, True])

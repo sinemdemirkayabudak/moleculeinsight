@@ -2381,6 +2381,7 @@ def render_scaffold_sar() -> None:
                     "avg_activity": st.column_config.NumberColumn("Avg IC50 (nM)"),
                     "min_activity": st.column_config.NumberColumn("Min IC50 (nM)"),
                     "max_activity": st.column_config.NumberColumn("Max IC50 (nM)"),
+                    "molecules": None,  # Hide from web display
                 },
                 width="stretch",
             )
@@ -2393,6 +2394,12 @@ def render_scaffold_sar() -> None:
                 file_name="scaffold_summary.csv",
                 mime="text/csv",
                 width="content",
+            )
+
+            st.info(
+                "**Tip:** The downloaded CSV file includes a 'molecules' column showing which "
+                "molecules share each scaffold (comma-separated). This helps identify all compounds "
+                "with a particular core structure."
             )
 
         st.markdown("")

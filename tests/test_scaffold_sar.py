@@ -1007,6 +1007,7 @@ class TestEdgeCases:
             {
                 "scaffold": [],
                 "standard_value": [],
+                "molecule_id": [],
             }
         )
         result = summarize_scaffolds(df)
