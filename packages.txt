@@ -1,2 +1,4 @@
 build-essential
 libboost-all-dev
+libxrender1
+libx11-6
