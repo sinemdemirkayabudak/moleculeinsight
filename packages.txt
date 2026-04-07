@@ -1,5 +1,2 @@
 build-essential
-libcairo2-dev
-libfreetype6-dev
-pkg-config
 libboost-all-dev
