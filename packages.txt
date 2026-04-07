@@ -1,0 +1,13 @@
+# System dependencies for Streamlit Cloud
+# Required for rdkit and other scientific packages
+
+# Build tools and development headers
+build-essential
+
+# Graphics and rendering libraries (required by rdkit for molecular drawing)
+libcairo2-dev
+libfreetype6-dev
+pkg-config
+
+# Boost libraries (used by rdkit)
+libboost-all-dev
