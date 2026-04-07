@@ -1,0 +1,30 @@
+# MoleculeInsight - Production Dependencies
+# For Streamlit Community Cloud deployment
+# Last updated: 2026-04-07
+
+# Core Framework
+streamlit>=1.54.0
+
+# Molecular Cheminformatics
+rdkit>=2025.9.3
+
+# Machine Learning & Modeling
+xgboost>=2.1.0
+scikit-learn>=1.5.0
+shap==0.51.0
+
+# Data Processing & Visualization
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.10.8
+plotly>=6.6.0
+
+# External APIs & Data
+requests>=2.31.0
+pubchempy>=1.0.5
+
+# Configuration & Environment
+python-dotenv>=1.2.1
+
+# File Monitoring (for development, optional in cloud)
+watchdog>=6.0.0

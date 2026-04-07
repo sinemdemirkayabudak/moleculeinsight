@@ -1,2 +1,41 @@
+# Streamlit Configuration for Community Cloud Deployment
+# Updated for production: 2026-04-07
+
 [theme]
 base = "light"
+
+[client]
+# Show detailed error messages for debugging
+showErrorDetails = true
+# Enable toolbar
+toolbarMode = "viewer"
+
+[server]
+# Required for cloud deployment (headless mode - no browser UI needed)
+headless = true
+
+# Don't rerun script on file save (prevents crashes during updates)
+runOnSave = false
+
+# Standard Streamlit port
+port = 8501
+
+# Maximum upload size (10 MB - suitable for molecular data)
+maxUploadSize = 10
+
+# Increased timeout for model inference and API calls
+maxMessageSize = 200
+
+[logger]
+# Production logging level (captures important events for debugging)
+level = "info"
+
+# Log to STDOUT for cloud monitoring
+format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+[client.toolbarMode]
+# User-friendly toolbar display
+
+[browser]
+# Gatherusage stats (optional, helps Streamlit improve)
+gatherUsageStats = false

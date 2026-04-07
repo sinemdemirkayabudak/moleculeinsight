@@ -23,5 +23,8 @@ htmlcov/
 .history/
 *.log
 
+# Streamlit Secrets (should never be committed)
+.streamlit/secrets.toml
+
 # custom
 .DS_Store
