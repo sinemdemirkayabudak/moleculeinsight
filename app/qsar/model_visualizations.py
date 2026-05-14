@@ -130,6 +130,7 @@ def load_and_prepare_data():
     )
     preprocess_result = pipeline.preprocess_data()
     pipeline.cleaned_data = preprocess_result.get("data")
+    assert pipeline.cleaned_data is not None, "Cleaned data should not be None after preprocessing"
 
     # Extract SMILES and targets
     smiles_list = pipeline.cleaned_data["smiles"].tolist()
@@ -711,9 +712,7 @@ def main():
         },
         "residuals": prepare_residuals_data(xgb_model, X_test, y_test),
         "predictions_vs_actual": prepare_predictions_vs_actual_data(xgb_model, X_test, y_test),
-        "feature_importance": prepare_feature_importance_data(
-            xgb_model, smiles_list, shap_vals, n_features=20
-        ),
+        "feature_importance": prepare_feature_importance_data(shap_vals, n_features=20),
         "error_distribution": prepare_error_distribution_data(xgb_model, X_test, y_test),
         "model_summary": prepare_model_summary_data(xgb_model, X_train, X_test, y_train, y_test),
         "shap_heatmap": prepare_shap_heatmap_data(

@@ -25,3 +25,9 @@ htmlcov/
 
 # custom
 .DS_Store
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Ruff
+.ruff_cache/

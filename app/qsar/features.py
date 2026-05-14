@@ -52,7 +52,7 @@ def compute_morgan_fingerprints(
         failed = 0
 
         # Create Morgan generator once (more efficient)
-        gen = AllChem.GetMorganGenerator(radius=radius)
+        gen = AllChem.GetMorganGenerator(radius=radius)  # type: ignore
 
         for smiles in smiles_list:
             try:
@@ -122,14 +122,14 @@ def compute_rdkit_descriptors(
 
     # Define RDKit descriptors to compute
     descriptor_list = [
-        ("MW", Descriptors.MolWt),  # Molecular Weight
-        ("LogP", Descriptors.MolLogP),  # Partition coefficient (lipophilicity)
-        ("HBD", Descriptors.NumHDonors),  # Hydrogen Bond Donors
-        ("HBA", Descriptors.NumHAcceptors),  # Hydrogen Bond Acceptors
-        ("TPSA", Descriptors.TPSA),  # Topological Polar Surface Area
-        ("RotBonds", Descriptors.NumRotatableBonds),  # Rotatable Bonds
-        ("AromaticRings", Descriptors.NumAromaticRings),  # Aromatic Ring Count
-        ("RingCount", Descriptors.RingCount),  # Total Ring Count
+        ("MW", Descriptors.MolWt),  # type: ignore  # Molecular Weight
+        ("LogP", Descriptors.MolLogP),  # type: ignore  # Partition coefficient (lipophilicity)
+        ("HBD", Descriptors.NumHDonors),  # type: ignore  # Hydrogen Bond Donors
+        ("HBA", Descriptors.NumHAcceptors),  # type: ignore  # Hydrogen Bond Acceptors
+        ("TPSA", Descriptors.TPSA),  # type: ignore  # Topological Polar Surface Area
+        ("RotBonds", Descriptors.NumRotatableBonds),  # type: ignore  # Rotatable Bonds
+        ("AromaticRings", Descriptors.NumAromaticRings),  # type: ignore  # Aromatic Ring Count
+        ("RingCount", Descriptors.RingCount),  # type: ignore  # Total Ring Count
     ]
 
     try:

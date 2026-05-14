@@ -93,7 +93,7 @@ def display_ranking_plots(plots_dict: dict[str, Figure]) -> None:
 
     plot_df = plots_dict.get(selected_query)
 
-    if plot_df is not None and not plot_df.empty:
+    if plot_df is not None and isinstance(plot_df, pd.DataFrame) and not plot_df.empty:
         df = plot_df.reset_index().rename(columns={"index": "ref_name"})
         df = df.sort_values("Similarity", ascending=False)
 
@@ -342,7 +342,11 @@ def render_single_molecule() -> None:
                         "H-bond Acceptors (HBA)": str(hba),
                         "Rotatable Bonds": str(rotb),
                     }
-                    prop_df = pd.DataFrame(list(prop.items()), columns=["Property", "Value"])
+                    # Create DataFrame with proper column specification
+                    prop_df = pd.DataFrame(
+                        [(k, v) for k, v in prop.items()],
+                        columns=["Property", "Value"],  # ty:ignore[invalid-argument-type]
+                    )
                     # Explicitly set all columns to string dtype to prevent PyArrow errors
                     prop_df = prop_df.astype(str)
                     st.dataframe(prop_df, width="stretch", hide_index=True)
@@ -1628,8 +1632,7 @@ def render_qsar_dashboard() -> None:
                     
                     **Model Used**
                     
-                    This model is built with **XGBoost** (Extreme Gradient Boosting), a powerful ensemble learning algorithm that combines 
-                    multiple decision trees to make predictions. XGBoost was selected because it:
+                    This model uses **XGBoost** (Extreme Gradient Boosting), an ensemble learning algorithm that combines multiple decision trees to make predictions. XGBoost was selected because it:
                     - Handles non-linear relationships well
                     - Provides accurate predictions on unseen data
                     - Ranks features by importance (useful for understanding what matters in binding)
@@ -2848,7 +2851,7 @@ def render_app() -> None:
     """
 
     # Inject SEO meta tags
-    st.components.v1.html(
+    st.components.v1.html(  # ty:ignore[possibly-missing-submodule]
         """
         <script>
         const addMetaTag = (name, content, isProperty = false) => {
@@ -2862,7 +2865,7 @@ def render_app() -> None:
         };
         
         // SEO
-        addMetaTag('description', 'MoleculeInsight: Predict EGFR binding affinity, screen compound libraries, and analyze structure-activity relationships using validated XGBoost QSAR models. Features similarity search, scaffold analysis, and SHAP explainability.');
+        addMetaTag('description', 'MoleculeInsight: Predict EGFR binding affinity, screen compound libraries, and analyze structure-activity relationships using validated XGBoost QSAR model. Features similarity search, scaffold analysis, and SHAP explainability.');
         addMetaTag('keywords', 'QSAR, drug discovery, molecular similarity, cheminformatics, EGFR, XGBoost, virtual screening');
         addMetaTag('author', 'Sinem Demirkaya-Budak');
         

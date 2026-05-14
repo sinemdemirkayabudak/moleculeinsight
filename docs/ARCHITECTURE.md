@@ -8,7 +8,7 @@
 MoleculeInsight combines multiple molecular analysis techniques:
 - **Single Molecule**: Lipinski compliance, molecular properties, PubChem/ChEMBL integration
 - **Similarity Search**: Morgan fingerprints + Tanimoto similarity for structural matching
-- **QSAR Prediction**: ML models (RF/XGBoost) for EGFR IC50 bioactivity
+- **QSAR Prediction**: XGBoost model for EGFR IC50 bioactivity prediction
 - **Virtual Screening**: Batch processing with drug-likeness filtering
 - **Scaffold & SAR Explorer** ✨: Murcko scaffolds, activity cliff detection, IC50 matching
 
@@ -91,7 +91,7 @@ Industry-standard metric: Tanimoto(A, B) = |A ∩ B| / |A ∪ B|
 ### QSAR Models
 - **Training**: ~5000 EGFR inhibitors from ChEMBL
 - **Features**: 2048 Morgan bits + 8 RDKit descriptors
-- **Models**: Random Forest + XGBoost (CV R² = 0.70)
+- **Model**: XGBoost for predictions (CV R² = 0.70)
 - **Output**: pIC50 predictions with confidence intervals
 
 ### Murcko Scaffolds

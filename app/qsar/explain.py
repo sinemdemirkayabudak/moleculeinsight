@@ -24,7 +24,7 @@ class QSARExplainer:
     def create_explainer(
         self,
         model: Any,
-        X_background: np.ndarray,
+        X_background: np.ndarray | None,
         model_name: str = "model",
     ) -> shap.TreeExplainer:
         """

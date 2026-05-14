@@ -100,6 +100,7 @@ def main():
         return
 
     pipeline.cleaned_data = preprocess_result.get("data")
+    assert pipeline.cleaned_data is not None, "Cleaned data should not be None"
     n_cleaned = len(pipeline.cleaned_data)
     print(f"✓ Cleaned: {n_raw} → {n_cleaned} molecules ({100 * n_cleaned / n_raw:.1f}%)")
     print()

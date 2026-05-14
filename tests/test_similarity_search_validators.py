@@ -44,7 +44,7 @@ class TestValidateDataframe:
 
     def test_empty_dataframe(self):
         """Test empty dataframe raises error."""
-        df = pd.DataFrame(columns=["smiles", "name"])
+        df = pd.DataFrame(columns=["smiles", "name"])  # ty:ignore[invalid-argument-type]
         with pytest.raises(ValueError, match="empty"):
             validate_dataframe(df, "test", ["smiles", "name"])
 

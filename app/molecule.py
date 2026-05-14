@@ -1,6 +1,6 @@
 import streamlit as st
 from rdkit import Chem
-from rdkit.Chem import Crippen, Descriptors, Lipinski, Mol
+from rdkit.Chem import Descriptors, Mol
 
 from app.config import logger
 
@@ -22,17 +22,17 @@ def get_molecule(smiles: str) -> Mol | None:
         return None
 
 
-def get_rdkit_properties(mol: Mol) -> dict[str, float] | None:
+def get_rdkit_properties(mol: Mol | None) -> dict[str, float] | None:
     if mol is None:
         return None
     try:
         properties = {
-            "mw": Descriptors.MolWt(mol),  # molecular weight
-            "logP": Crippen.MolLogP(mol),  # logP (octanol/water)
-            "tpsa": Descriptors.TPSA(mol),  # topological polar surface area
-            "hbd": Lipinski.NumHDonors(mol),  # hydrogen bond donors
-            "hba": Lipinski.NumHAcceptors(mol),  # hydrogen bond acceptors
-            "rotb": Lipinski.NumRotatableBonds(mol),  # rotatable bonds
+            "mw": Descriptors.MolWt(mol),  # type: ignore  # molecular weight
+            "logP": Descriptors.MolLogP(mol),  # type: ignore  # logP (octanol/water)
+            "tpsa": Descriptors.TPSA(mol),  # type: ignore  # topological polar surface area
+            "hbd": Descriptors.NumHDonors(mol),  # type: ignore  # hydrogen bond donors
+            "hba": Descriptors.NumHAcceptors(mol),  # type: ignore  # hydrogen bond acceptors
+            "rotb": Descriptors.NumRotatableBonds(mol),  # type: ignore  # rotatable bonds
         }
         return properties
 
@@ -42,7 +42,9 @@ def get_rdkit_properties(mol: Mol) -> dict[str, float] | None:
         return None
 
 
-def lipinski_rules(properties: dict[str, float]) -> dict[str, bool]:
+def lipinski_rules(properties: dict[str, int | float] | None) -> dict[str, bool] | None:
+    if properties is None:
+        return None
     try:
         mw = properties["mw"]
         logp = properties["logP"]

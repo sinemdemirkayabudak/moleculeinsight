@@ -1,5 +1,6 @@
 {
-  "model_type": "XGBoost (best) + RandomForest",
+  "model_type": "XGBoost",
+  "model_note": "Both Random Forest and XGBoost were trained and compared. XGBoost was selected for production (R\u00b2=0.7018 vs RF R\u00b2=0.6225).",
   "feature_type": "combined",
   "n_features": 2056,
   "feature_description": "Morgan fingerprints (2048) + RDKit descriptors (8)",
@@ -11,7 +12,7 @@
   },
   "train_test_split": "80/20",
   "date_trained": "2026-03-13T13:11:26.673847",
-  "status": "Production - Combined features model",
+  "status": "Production - XGBoost model (trained on combined Morgan + RDKit features)",
   "uncertainty_metrics": {
     "residual_std": 0.37500000000000044,
     "rmse": 0.6051859218455106,

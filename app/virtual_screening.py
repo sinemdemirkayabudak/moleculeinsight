@@ -21,14 +21,14 @@ from app.qsar.predict import QSARPredictor
 from app.utils import safe_execute
 
 
-def count_lipinski_violations(mol: Chem.Mol) -> int:
+def count_lipinski_violations(mol: Chem.Mol | None) -> int:
     """
     Count number of Lipinski rule-of-5 violations for a molecule.
 
     Parameters
     ----------
-    mol : Chem.Mol
-        RDKit molecule object
+    mol : Chem.Mol | None
+        RDKit molecule object or None
 
     Returns
     -------
@@ -36,6 +36,8 @@ def count_lipinski_violations(mol: Chem.Mol) -> int:
         Number of violations (0-4)
     """
     try:
+        if mol is None:
+            return 4  # Treat None as complete failure
         properties = get_rdkit_properties(mol)
         if not properties:
             return 4  # Treat as complete failure
@@ -51,7 +53,7 @@ def count_lipinski_violations(mol: Chem.Mol) -> int:
         return 4  # Treat as complete failure
 
 
-def compute_qed_score(mol: Chem.Mol) -> float | None:
+def compute_qed_score(mol: Chem.Mol | None) -> float | None:
     """
     Compute QED (Quantitative Estimate of Drug-likeness) score.
 
@@ -59,8 +61,8 @@ def compute_qed_score(mol: Chem.Mol) -> float | None:
 
     Parameters
     ----------
-    mol : Chem.Mol
-        RDKit molecule object
+    mol : Chem.Mol | None
+        RDKit molecule object or None
 
     Returns
     -------

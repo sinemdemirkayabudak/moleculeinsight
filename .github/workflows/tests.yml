@@ -28,6 +28,9 @@ jobs:
         run: |
           $HOME/.local/bin/uv sync --all-groups
 
+      - name: Type check with ty
+        run: $HOME/.local/bin/uv run ty check
+
       - name: Lint with Ruff
         run: |
           $HOME/.local/bin/uv run ruff check .

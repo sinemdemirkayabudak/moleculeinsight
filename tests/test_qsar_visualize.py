@@ -83,7 +83,7 @@ class TestValidateBaseValue:
     def test_validate_base_value_numpy_int(self):
         """Test numpy int base value."""
         # Should not raise
-        SHAPVisualizer._validate_base_value(np.int64(5))
+        SHAPVisualizer._validate_base_value(np.int64(5))  # ty:ignore[invalid-argument-type]
 
     def test_validate_base_value_zero(self):
         """Test zero base value."""
@@ -98,12 +98,12 @@ class TestValidateBaseValue:
     def test_validate_base_value_string(self):
         """Test string base value raises error."""
         with pytest.raises((ValueError, TypeError)):
-            SHAPVisualizer._validate_base_value("5.0")
+            SHAPVisualizer._validate_base_value("5.0")  # ty:ignore[invalid-argument-type]
 
     def test_validate_base_value_none(self):
         """Test None base value raises error."""
         with pytest.raises((ValueError, TypeError)):
-            SHAPVisualizer._validate_base_value(None)
+            SHAPVisualizer._validate_base_value(None)  # ty:ignore[invalid-argument-type]
 
     def test_validate_base_value_bool(self):
         """Test bool base value raises error."""

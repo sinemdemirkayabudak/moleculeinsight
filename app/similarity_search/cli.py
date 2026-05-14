@@ -171,7 +171,6 @@ def main():
         run_similarity_search(
             query_file=args.query_file,
             reference_file=args.reference_file,
-            output_file=args.output_file,
             radius=args.radius,
             top_n=args.top_n,
             show_plots=args.show_plots,
