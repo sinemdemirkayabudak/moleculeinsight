@@ -10,7 +10,7 @@ A Streamlit web application for analyzing molecular properties, drug-likeness, a
 **MoleculeInsight** is a comprehensive molecular analysis platform with 5 integrated tools:
 - **Single Molecule Analysis** - Visualize structures, calculate properties, evaluate drug-likeness, retrieve PubChem/ChEMBL bioactivity
 - **Similarity Search** - Find structurally similar compounds using Morgan fingerprints and Tanimoto similarity
-- **QSAR Prediction** - Predict EGFR kinase binding affinity using trained XGBoost QSAR ML model with SHAP explainability
+- **QSAR Prediction** - Predict EGFR kinase binding affinity using trained XGBoost QSAR model with SHAP explainability
 - **Virtual Screening** -  Batch screen molecules through QSAR pipeline, filter by drug-likeness, rank by predicted activity
 - **Scaffold & SAR Explorer** - Extract Murcko scaffolds, detect activity cliffs, analyze structure-activity relationships
 
@@ -31,7 +31,7 @@ Enter SMILES strings or upload CSV files for instant multi-faceted molecular ana
 - **CSV Export** - Download results with similarity scores
 
 **QSAR Bioactivity Prediction**
-- **ML Models** - Random Forest and XGBoost models trained on EGFR ChEMBL data
+- **ML Model** - XGBoost model trained on EGFR ChEMBL data
 - **pIC50 Prediction** - Predict kinase binding affinity
 - **SHAP Explainability** - Feature importance visualization
 - **Cross-Validation** - 5-fold CV with R²=0.70 performance
@@ -72,7 +72,7 @@ Install Microsoft C++ Build Tools or Visual Studio (includes OpenMP by default)
 1. **Install dependencies:**
    ```bash
    cd moleculeinsight
-   uv sync                    # or: pip install streamlit rdkit python-dotenv requests
+   uv sync 
    ```
 
 2. **Run the app:**

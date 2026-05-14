@@ -11,7 +11,7 @@ if __name__ == "__main__":
         menu_items={
             "About": """
             # MoleculeInsight
-            Predict EGFR binding affinity, screen compound libraries, and analyze structure-activity relationships using validated XGBoost QSAR models. 
+            Predict EGFR binding affinity, screen compound libraries, and analyze structure-activity relationships using validated XGBoost QSAR model. 
             ## Features 
             - QSAR modeling with XGBoost (R²=0.70)
             - Molecular similarity search

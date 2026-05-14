@@ -172,7 +172,7 @@ class TestExtractMurckoScaffold:
         """Test that None input is handled gracefully."""
         # The function may either raise AttributeError or return None
         try:
-            result = extract_murcko_scaffold(None)
+            result = extract_murcko_scaffold(None)  # ty:ignore[invalid-argument-type]
             assert result is None
         except (AttributeError, TypeError):
             # Either behavior is acceptable
@@ -413,7 +413,7 @@ class TestComputeTanimotoSimilarity:
         for i in range(len(fps) - 1):
             if fps[i] is not None and fps[i + 1] is not None:
                 sim = compute_tanimoto_similarity(fps[i], fps[i + 1])
-                assert 0.0 <= sim <= 1.0
+                assert 0.0 <= sim <= 1.0  # ty:ignore[unsupported-operator]
 
     def test_tanimoto_exception_handling(self):
         """Test tanimoto similarity exception handling with invalid fingerprints."""
@@ -628,7 +628,7 @@ class TestGetIc50SummaryStats:
         """Test that coverage percentage is calculated correctly."""
         stats = get_ic50_summary_stats(dataframe_with_missing_ic50)
         expected_coverage = 2 / 3 * 100  # 2 out of 3 have IC50
-        assert abs(stats["coverage_percent"] - expected_coverage) < 0.1
+        assert abs(stats["coverage_percent"] - expected_coverage) < 0.1  # ty:ignore[unsupported-operator]
 
     def test_all_ic50_present(self, sample_dataframe):
         """Test coverage when all IC50 values present."""
@@ -898,13 +898,13 @@ class TestIntegration:
 
         # Get statistics
         stats = get_ic50_summary_stats(df_scaffolds)
-        assert stats["total_molecules"] > 0
+        assert stats["total_molecules"] > 0  # ty:ignore[unsupported-operator]
 
     def test_cliff_detection_pipeline(self, sample_dataframe):
         """Test complete activity cliff detection pipeline."""
         # Get stats
         stats = get_ic50_summary_stats(sample_dataframe)
-        assert stats["coverage_percent"] > 0
+        assert stats["coverage_percent"] > 0  # ty:ignore[unsupported-operator]
 
         # Detect cliffs
         cliffs = detect_activity_cliffs(sample_dataframe)
@@ -951,7 +951,7 @@ class TestEdgeCases:
         )
 
         stats = get_ic50_summary_stats(df)
-        assert stats["mean_ic50"] > 0
+        assert stats["mean_ic50"] > 0  # ty:ignore[unsupported-operator]
 
     def test_very_small_ic50_values(self):
         """Test with very small IC50 values."""
@@ -963,7 +963,7 @@ class TestEdgeCases:
         )
 
         stats = get_ic50_summary_stats(df)
-        assert stats["median_ic50"] > 0
+        assert stats["median_ic50"] > 0  # ty:ignore[unsupported-operator]
 
     def test_high_similarity_threshold(self, sample_dataframe):
         """Test with very high similarity threshold."""

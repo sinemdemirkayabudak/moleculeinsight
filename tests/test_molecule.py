@@ -93,12 +93,12 @@ class TestRdkitProperties:
         mol = get_molecule("CCO")
         props = get_rdkit_properties(mol)
 
-        for key, value in props.items():
+        for key, value in props.items():  # ty:ignore[unresolved-attribute]
             assert isinstance(value, (int, float)), f"{key} is not numeric"
 
     @patch("app.molecule.logger")
     @patch("app.molecule.st.error")
-    @patch("app.molecule.Crippen.MolLogP")
+    @patch("app.molecule.Descriptors.MolLogP")
     def test_property_calculation_exception(self, mock_logp, mock_st_error, mock_logger):
         """Test exception handling when property calculation fails."""
         mock_logp.side_effect = Exception("LogP failed")
@@ -130,7 +130,7 @@ class TestLipinskiRules:
         props = get_rdkit_properties(mol)
         rules = lipinski_rules(props)
 
-        assert all(rules.values())
+        assert all(rules.values())  # ty:ignore[unresolved-attribute]
 
     def test_rules_dict_structure(self):
         """Test that rules dictionary has correct keys."""
@@ -139,7 +139,7 @@ class TestLipinskiRules:
         rules = lipinski_rules(props)
 
         expected_keys = {"MW <= 500", "LogP <= 5", "HBD <= 5", "HBA <= 10"}
-        assert set(rules.keys()) == expected_keys
+        assert set(rules.keys()) == expected_keys  # ty:ignore[unresolved-attribute]
 
     def test_all_rules_are_boolean(self):
         """Test that all rule values are boolean."""
@@ -147,7 +147,7 @@ class TestLipinskiRules:
         props = get_rdkit_properties(mol)
         rules = lipinski_rules(props)
 
-        for key, value in rules.items():
+        for key, value in rules.items():  # ty:ignore[unresolved-attribute]
             assert isinstance(value, bool), f"{key} is not boolean"
 
     def test_missing_property_key_raises_error(self):
@@ -155,7 +155,7 @@ class TestLipinskiRules:
         incomplete_props = {"mw": 300}  # Missing logP, hbd, hba
 
         with pytest.raises(KeyError):
-            lipinski_rules(incomplete_props)
+            lipinski_rules(incomplete_props)  # ty:ignore[invalid-argument-type]
 
     @patch("app.molecule.logger")
     def test_lipinski_rules_exception_handling(self, mock_logger):
@@ -164,4 +164,4 @@ class TestLipinskiRules:
         bad_props = {"mw": "invalid", "logP": 3, "hbd": 1, "hba": 1}
 
         with pytest.raises(TypeError):
-            lipinski_rules(bad_props)
+            lipinski_rules(bad_props)  # ty:ignore[invalid-argument-type]

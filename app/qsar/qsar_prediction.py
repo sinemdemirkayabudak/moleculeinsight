@@ -65,11 +65,12 @@ class QSARPipeline:
 
         result = get_egfr_ic50_data(limit=limit, offset=offset)
 
-        if not result.get("success"):
-            logger.error(f"Failed to load data: {result.get('error')}")
-            return result
+        if result is None or not result.get("success"):
+            logger.error(f"Failed to load data: {result.get('error') if result else 'No result'}")
+            return result or {"success": False, "error": "No result from API"}
 
         self.raw_data = result.get("data")
+        assert self.raw_data is not None, "Data should not be None after successful load"
         logger.info(f"Loaded {len(self.raw_data)} raw records")
 
         return {
@@ -115,6 +116,7 @@ class QSARPipeline:
             return {"success": False, "error": "Preprocessing failed", "stats": stats}
 
         self.cleaned_data = cleaned_df
+        assert self.cleaned_data is not None, "Cleaned data should not be None"
         logger.info(f"Preprocessing complete: {len(cleaned_df)} molecules")
 
         return {
@@ -167,6 +169,7 @@ class QSARPipeline:
             return result
 
         self.features = result.get("X")
+        assert self.features is not None, "Features should not be None after featurization"
         self.feature_names = result.get("feature_names")
         self.feature_type = fingerprint_type
 
@@ -220,6 +223,7 @@ class QSARPipeline:
         )
 
         self.splits = results["splits"]
+        assert self.splits is not None, "Splits should not be None after training"
         self.metrics = results["metrics"]
 
         logger.info("Model training complete")
@@ -399,6 +403,12 @@ class QSARPipeline:
 
         logger.info("Complete QSAR pipeline finished")
 
+        # Assert all required attributes are populated
+        assert self.raw_data is not None, "raw_data should be populated by now"
+        assert self.cleaned_data is not None, "cleaned_data should be populated by now"
+        assert self.features is not None, "features should be populated by now"
+        assert self.splits is not None, "splits should be populated by now"
+
         return {
             "success": True,
             "data": {
@@ -477,6 +487,7 @@ class QSARPipeline:
             return pd.DataFrame()
 
         # Predict
+        assert X_new is not None, "X_new should not be None"
         y_pred = self.predictor.predict(model, X_new)
 
         # Compute uncertainty

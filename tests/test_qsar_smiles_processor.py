@@ -208,7 +208,7 @@ class TestSanitizeBioactivity:
 
     def test_sanitize_none_input(self):
         """Test with None input."""
-        result = _sanitize_bioactivity(None)
+        result = _sanitize_bioactivity(None)  # ty:ignore[invalid-argument-type]
         assert result == []
 
     def test_sanitize_maintains_all_fields(self, sample_bioactivity_records):
@@ -326,6 +326,6 @@ class TestGetCachedBioactivity:
         ]
 
         result = get_cached_bioactivity(compounds, "MultiTarget")
-        assert len(result) == 2
-        assert result[0]["target_name"] == "EGFR"
-        assert result[1]["target_name"] == "HER2"
+        assert len(result) == 2  # ty:ignore[invalid-argument-type]
+        assert result[0]["target_name"] == "EGFR"  # ty:ignore[not-subscriptable]
+        assert result[1]["target_name"] == "HER2"  # ty:ignore[not-subscriptable]

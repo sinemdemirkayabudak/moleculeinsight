@@ -19,7 +19,7 @@ def pytest_configure(config):
     # Patch at module level before imports
     import streamlit
 
-    streamlit.cache_data = cache_data_passthrough
+    streamlit.cache_data = cache_data_passthrough  # ty:ignore[invalid-assignment]
 
 
 @pytest.fixture(autouse=True)
@@ -27,7 +27,7 @@ def clear_streamlit_cache():
     """Clear Streamlit cache before each test to prevent cross-test contamination."""
     # Clear Streamlit's cache data before the test runs
     try:
-        from streamlit.runtime.caching import clear_cache
+        from streamlit.runtime.caching import clear_cache  # ty:ignore[unresolved-import]
 
         clear_cache()
     except ImportError:
@@ -37,7 +37,7 @@ def clear_streamlit_cache():
 
             # Access the internal cache and clear it
             if hasattr(st, "_cache"):
-                st._cache.clear()
+                st._cache.clear()  # ty:ignore[unresolved-attribute]
         except Exception:
             # If clearing fails, continue with test - not critical
             pass
@@ -46,7 +46,7 @@ def clear_streamlit_cache():
 
     # Clean up after test if needed
     try:
-        from streamlit.runtime.caching import clear_cache
+        from streamlit.runtime.caching import clear_cache  # ty:ignore[unresolved-import]
 
         clear_cache()
     except ImportError:

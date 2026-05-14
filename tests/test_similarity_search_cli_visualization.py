@@ -144,7 +144,7 @@ class TestPrepareCSVExport:
                 "Reference SMILES",
                 "Similarity Score",
                 "Structures",
-            ]
+            ]  # ty:ignore[invalid-argument-type]
         )
 
         csv_string = prepare_csv_export(results)

@@ -195,7 +195,7 @@ class TestFeaturizeData:
             assert result["success"] is True
             assert pipeline.features is not None
             assert pipeline.feature_type == "morgan"
-            assert len(pipeline.feature_names) == 2048
+            assert len(pipeline.feature_names) == 2048  # ty:ignore[invalid-argument-type]
 
     def test_featurize_data_rdkit_success(self):
         """Test successful RDKit descriptor featurization."""

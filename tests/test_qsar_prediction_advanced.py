@@ -364,7 +364,7 @@ class TestLoadModels:
             assert pipeline.rf_model is not None
             assert pipeline.xgb_model is not None
             assert pipeline.feature_type == "morgan"
-            assert len(pipeline.feature_names) == 2
+            assert len(pipeline.feature_names) == 2  # ty:ignore[invalid-argument-type]
 
     def test_load_models_directory_not_exists(self):
         """Test loading from non-existent directory."""

@@ -47,7 +47,9 @@ def get_morgan_fp(mol, radius):
         ExplicitBitVect: A 2048-bit binary fingerprint vector compatible with Tanimoto similarity
     """
 
-    gen = AllChem.GetMorganGenerator(radius=radius)  # radius = 2 by default
+    gen = AllChem.GetMorganGenerator(  # ty: ignore[unresolved-attribute]
+        radius=radius
+    )  # radius = 2 by default
     # GetFingerprint returns a fingerprint object compatible with TanimotoSimilarity
     return gen.GetFingerprint(mol)
 

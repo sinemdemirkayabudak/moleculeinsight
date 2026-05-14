@@ -216,13 +216,19 @@ def get_chembl_bioactivity(
 
     try:
         url = f"{CHEMBL_BASE_URL}/activity.json"
-        params = {"limit": limit}
+        params: dict[str, int | str] = {"limit": limit}
 
         # Set query parameter based on ID type
         if molecule_chembl_id:
             params["molecule_chembl_id"] = molecule_chembl_id
             logger.info(f"Fetching ChEMBL bioactivity for molecule {molecule_chembl_id}")
         else:
+            if target_chembl_id is None:
+                error_msg = (
+                    "target_chembl_id must not be None when molecule_chembl_id is not provided"
+                )
+                logger.error(error_msg)
+                return {"success": False, "error": error_msg}
             params["target_chembl_id"] = target_chembl_id
             logger.info(
                 f"Fetching {standard_type or 'all'} bioactivity data for target {target_chembl_id}"
@@ -357,6 +363,9 @@ def get_compound_bioactivity_from_mol(mol, limit: int = 20):
             smiles = None
 
         # Attempt ChEMBL lookup with InChIKey, fallback to SMILES if needed
+        if inchikey is None:
+            logger.error("InChIKey not resolved from PubChem")
+            return {"success": False, "stage": "inchikey_missing"}
         chembl_data = get_chembl_molecule(inchikey, smiles=smiles)
 
         if not chembl_data.get("success"):

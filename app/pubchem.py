@@ -40,7 +40,7 @@ def get_clean_common_name(synonyms: list[str]) -> str:
     return "Unknown"
 
 
-def _get_pubchem_metadata(mol: Mol) -> dict:
+def _get_pubchem_metadata(mol: Mol | None) -> dict:
     try:
         if mol is None:
             return {

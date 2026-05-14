@@ -30,13 +30,13 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data(limit=10000, offset=0)
 
-        assert result["success"] is True
-        assert isinstance(result["data"], pd.DataFrame)
-        assert result["count"] == 2
-        assert result["total_returned"] == 2
-        assert len(result["data"]) == 2
-        assert "smiles" in result["data"].columns
-        assert "standard_value" in result["data"].columns
+        assert result["success"] is True  # ty:ignore[not-subscriptable]
+        assert isinstance(result["data"], pd.DataFrame)  # ty:ignore[not-subscriptable]
+        assert result["count"] == 2  # ty:ignore[not-subscriptable]
+        assert result["total_returned"] == 2  # ty:ignore[not-subscriptable]
+        assert len(result["data"]) == 2  # ty:ignore[not-subscriptable]
+        assert "smiles" in result["data"].columns  # ty:ignore[not-subscriptable]
+        assert "standard_value" in result["data"].columns  # ty:ignore[not-subscriptable]
 
     @patch("app.qsar.data_loader.get_chembl_bioactivity")
     @patch("app.qsar.data_loader.get_chembl_target_id")
@@ -58,7 +58,7 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data(limit=1000, offset=5000)
 
-        assert result["success"] is True
+        assert result["success"] is True  # ty:ignore[not-subscriptable]
         # Verify pagination parameters were passed to bioactivity function
         mock_bioactivity.assert_called_once()
         call_args = mock_bioactivity.call_args
@@ -85,7 +85,7 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data()
 
-        assert result["success"] is True
+        assert result["success"] is True  # ty:ignore[not-subscriptable]
         # Verify filters were passed to bioactivity function
         mock_bioactivity.assert_called_once()
         call_args = mock_bioactivity.call_args
@@ -101,8 +101,8 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data()
 
-        assert result["success"] is False
-        assert "Could not resolve target ID" in result["error"]
+        assert result["success"] is False  # ty:ignore[not-subscriptable]
+        assert "Could not resolve target ID" in result["error"]  # ty:ignore[not-subscriptable]
         # Bioactivity should not be called if target ID resolution fails
         mock_bioactivity.assert_not_called()
 
@@ -118,8 +118,8 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data()
 
-        assert result["success"] is False
-        assert "No bioactivity records found" in result["error"]
+        assert result["success"] is False  # ty:ignore[not-subscriptable]
+        assert "No bioactivity records found" in result["error"]  # ty:ignore[not-subscriptable]
 
     @patch("app.qsar.data_loader.get_chembl_bioactivity")
     @patch("app.qsar.data_loader.get_chembl_target_id")
@@ -129,8 +129,8 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data()
 
-        assert result["success"] is False
-        assert "Network error" in result["error"]
+        assert result["success"] is False  # ty:ignore[not-subscriptable]
+        assert "Network error" in result["error"]  # ty:ignore[not-subscriptable]
 
     @patch("app.qsar.data_loader.get_chembl_bioactivity")
     @patch("app.qsar.data_loader.get_chembl_target_id")
@@ -144,8 +144,8 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data()
 
-        assert result["success"] is False
-        assert "error" in result
+        assert result["success"] is False  # ty:ignore[not-subscriptable]
+        assert "error" in result  # ty:ignore[unsupported-operator]
 
     @patch("app.qsar.data_loader.get_chembl_bioactivity")
     @patch("app.qsar.data_loader.get_chembl_target_id")
@@ -169,9 +169,9 @@ class TestGetEgfrIc50Data:
 
         result = get_egfr_ic50_data(limit=10000)
 
-        assert result["success"] is True
-        assert result["count"] == 1000
-        assert len(result["data"]) == 1000
+        assert result["success"] is True  # ty:ignore[not-subscriptable]
+        assert result["count"] == 1000  # ty:ignore[not-subscriptable]
+        assert len(result["data"]) == 1000  # ty:ignore[not-subscriptable]
 
 
 class TestLoadEgfrDataset:
